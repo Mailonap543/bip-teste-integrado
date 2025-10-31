@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
+=======
+      <module fileurl="file://$PROJECT_DIR$/backend-module.iml" filepath="$PROJECT_DIR$/backend-module.iml" />
+>>>>>>> origin/main
       <module fileurl="file://$PROJECT_DIR$/ejb-module/ejb-module.iml" filepath="$PROJECT_DIR$/ejb-module/ejb-module.iml" />
     </modules>
   </component>

@@ -3,11 +3,19 @@ package com.example.ejb;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
-
 import com.example.backend.model.Beneficio;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.PersistenceContext;
+import com.example.backend.model.Beneficio;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceContext;
+
+
 import java.math.BigDecimal;
 
 @Stateless
@@ -37,6 +45,7 @@ public class BeneficioEjbService {
         em.flush();
     }
 
+
     public void initTestData() {
     }
 
@@ -47,4 +56,5 @@ public class BeneficioEjbService {
 
     public void transferir(long origemId, long destinoId, double valor) {
     }
+
 }
