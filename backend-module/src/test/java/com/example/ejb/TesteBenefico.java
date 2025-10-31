@@ -47,13 +47,13 @@ class BeneficioEjbServiceTest {
     @Test
     void testRollbackEmErro() {
         long origemId = 1L;
-        long destinoId = 999L; // inexistente
+        long destinoId = 999L;
         double valor = 50.0;
 
         double saldoAntes = service.getSaldo(origemId);
 
         assertThrows(RuntimeException.class, () -> service.transferir(origemId, destinoId, valor));
 
-        assertEquals(saldoAntes, service.getSaldo(origemId)); // saldo não mudou
+        assertEquals(saldoAntes, service.getSaldo(origemId));
     }
 }
