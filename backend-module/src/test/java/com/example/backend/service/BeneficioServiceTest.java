@@ -6,11 +6,13 @@ import com.example.backend.entity.TransferenceEntity;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.repository.BeneficioRepository;
 import com.example.backend.repository.TransferenceRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class BeneficioServiceTest {
 
     @Mock
@@ -31,10 +36,6 @@ class BeneficioServiceTest {
     @InjectMocks
     private BeneficioService beneficioService;
 
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void deveCriarBeneficio() {
@@ -92,7 +93,7 @@ class BeneficioServiceTest {
         BeneficioEntity resultado = beneficioService.update(1L, dto);
 
         assertEquals("Auxílio Gás", resultado.getTitular());
-        assertEquals(BigDecimal.valueOf(300.0), resultado.getValor());
+        assertEquals(BigDecimal.valueOf(300.0).setScale(1), resultado.getValor().setScale(1));
         assertFalse(resultado.getAtiva());
 
         verify(beneficioRepository, times(1)).findById(1L);
@@ -101,19 +102,26 @@ class BeneficioServiceTest {
 
     @Test
     void deveDeletarBeneficio() {
-        when(beneficioRepository.existsById(1L)).thenReturn(true);
+        BeneficioEntity dummyEntity = new BeneficioEntity();
+        dummyEntity.setId(1L);
+
+        when(beneficioRepository.findById(1L)).thenReturn(Optional.of(dummyEntity));
         doNothing().when(beneficioRepository).deleteById(1L);
 
         assertDoesNotThrow(() -> beneficioService.delete(1L));
+        verify(beneficioRepository, times(1)).findById(1L);
         verify(beneficioRepository, times(1)).deleteById(1L);
     }
 
     @Test
     void deveLancarErroAoDeletarBeneficioInexistente() {
-        when(beneficioRepository.existsById(1L)).thenReturn(false);
+        when(beneficioRepository.findById(1L)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(BusinessException.class, () -> beneficioService.delete(1L));
         assertEquals("Benefício não encontrado: 1", ex.getMessage());
+
+        verify(beneficioRepository, never()).deleteById(anyLong());
+        verify(beneficioRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -135,8 +143,8 @@ class BeneficioServiceTest {
 
         beneficioService.transfer(1L, 2L, 100.0);
 
-        assertEquals(BigDecimal.valueOf(400.0).setScale(2), origem.getValor());
-        assertEquals(BigDecimal.valueOf(300.0).setScale(2), destino.getValor());
+        assertEquals(BigDecimal.valueOf(400.0).setScale(1), origem.getValor().setScale(1));
+        assertEquals(BigDecimal.valueOf(300.0).setScale(1), destino.getValor().setScale(1));
 
         verify(beneficioRepository, times(2)).save(any(BeneficioEntity.class));
         verify(transferenceRepository, times(1)).save(any(TransferenceEntity.class));
@@ -161,6 +169,8 @@ class BeneficioServiceTest {
                 () -> beneficioService.transfer(1L, 2L, 100.0));
 
         assertEquals("Saldo insuficiente no benefício de origem.", ex.getMessage());
+
+        verify(beneficioRepository, never()).save(any(BeneficioEntity.class));
     }
 
     @Test

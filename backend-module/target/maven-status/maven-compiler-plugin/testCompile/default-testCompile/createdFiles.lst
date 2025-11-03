@@ -1,0 +1,4 @@
+com\example\backend\controller\BeneficioControllerTest.class
+com\example\backend\service\TransferenceServiceTest.class
+com\example\backend\service\BeneficioServiceTest.class
+com\example\backend\controller\TransferenceController.class

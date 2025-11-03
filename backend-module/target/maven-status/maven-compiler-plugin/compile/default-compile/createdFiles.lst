@@ -1,0 +1,16 @@
+com\example\backend\service\TransferenceService.class
+com\example\backend\controller\BeneficioController.class
+com\example\backend\exception\BusinessException.class
+com\example\backend\repository\BeneficioRepository.class
+com\example\backend\service\BeneficioService.class
+com\example\backend\BackendApplication.class
+com\example\backend\model\Beneficio.class
+com\example\backend\controller\TransferenceController.class
+com\example\backend\entity\TransferenceEntity.class
+com\example\backend\dto\BeneficioListDTO.class
+com\example\backend\dto\TransferResponseDTO.class
+com\example\backend\repository\TransferenceRepository.class
+com\example\backend\entity\BeneficioEntity.class
+com\example\backend\dto\BeneficioDTO.class
+com\example\backend\dto\BeneficioTransferRequestDTO.class
+com\example\backend\dto\BeneficioDTO$Beneficio.class

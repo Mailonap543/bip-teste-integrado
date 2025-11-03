@@ -1,14 +1,13 @@
 package com.example.backend.controller;
 
-import com.example.backend.comtroller.BeneficioController;
 import com.example.backend.dto.BeneficioDTO;
 import com.example.backend.entity.BeneficioEntity;
 import com.example.backend.service.BeneficioService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -18,18 +17,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@WebMvcTest(BeneficioController.class)
 class BeneficioControllerTest {
 
-    @Mock
-    private BeneficioService beneficioService;
-
-    @InjectMocks
+    @Autowired
     private BeneficioController beneficioController;
 
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+    @MockBean
+    private BeneficioService beneficioService;
 
     @Test
     void deveListarTodosBeneficios() {
@@ -109,7 +104,7 @@ class BeneficioControllerTest {
 
         ResponseEntity<Void> response = beneficioController.delete(1L);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(beneficioService, times(1)).delete(1L);
     }
 
@@ -119,7 +114,7 @@ class BeneficioControllerTest {
 
         ResponseEntity<Void> response = beneficioController.transfer(1L, 2L, 100.0);
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(beneficioService, times(1)).transfer(1L, 2L, 100.0);
     }
 }

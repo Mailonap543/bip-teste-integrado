@@ -1,0 +1,55 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+
+
+      - name: ☕ Configurar Java (Maven)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📦 Configurar Node.js (Frontend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+
+      - name: ⚙️ Build e Teste do Backend
+
+        run: mvn clean install -Dmaven.test.skip=false
+        working-directory: backend-module/
+
+
+      - name: 📥 Instalar Dependências do Frontend
+        run: npm install
+        working-directory: frontend-module/
+
+      - name: 🏗️ Build do Frontend (Cria a pasta 'build' ou 'dist')
+        run: npm run build
+        working-directory: frontend-module/
+
+
+      - name: 💾 Upload do JAR do Backend como Artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: backend-module/target/*.jar
+
+      - name: 💾 Upload da Build do Frontend como Artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend-module/build/
