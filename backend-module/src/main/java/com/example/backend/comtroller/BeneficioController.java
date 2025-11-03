@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.comtroller;
 
 import com.example.backend.dto.BeneficioDTO;
 import com.example.backend.entity.BeneficioEntity;
@@ -26,10 +26,10 @@ public class BeneficioController {
 
 
     @GetMapping("/{id}")
-    // CORREÇÃO: Tipo de retorno corrigido para BeneficioEntity
+
     public ResponseEntity<BeneficioEntity> get(@PathVariable Long id) {
 
-        // CORREÇÃO: Variável tipada corretamente e casting removido
+
         BeneficioEntity b = service.get(id);
 
         return b == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(b);
@@ -37,10 +37,10 @@ public class BeneficioController {
 
 
     @PostMapping
-    // CORREÇÃO: Tipo de retorno corrigido para BeneficioEntity
+
     public ResponseEntity<BeneficioEntity> create(@RequestBody BeneficioDTO dto) {
 
-        // CORREÇÃO: Variável tipada corretamente e casting removido
+
         BeneficioEntity b = service.create(dto);
 
         return ResponseEntity.ok(b);
@@ -48,10 +48,10 @@ public class BeneficioController {
 
 
     @PutMapping("/{id}")
-    // CORREÇÃO: Tipo de retorno corrigido para BeneficioEntity
+
     public ResponseEntity<BeneficioEntity> update(@PathVariable Long id, @RequestBody BeneficioDTO dto) {
         try {
-            // CORREÇÃO: Variável tipada corretamente e casting removido
+
             BeneficioEntity b = service.update(id, dto);
             return ResponseEntity.ok(b);
         } catch (IllegalStateException e) {
@@ -68,5 +68,9 @@ public class BeneficioController {
         } catch (IllegalStateException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    public ResponseEntity<Void> transfer(long l, long l1, double v) {
+        return null;
     }
 }

@@ -1,0 +1,177 @@
+Documentação do Backend — Projeto BIP Teste Integrado
+1️⃣ Estrutura do Projeto
+backend-module/
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/backend/
+│   │   │   ├── controller/          ← Controllers REST
+│   │   │   │   ├── BeneficioController.java
+│   │   │   │   └── TransferenceController.java
+│   │   │   ├── entity/              ← Entidades JPA
+│   │   │   │   ├── BeneficioEntity.java
+│   │   │   │   └── TransferenceEntity.java
+│   │   │   ├── repository/          ← Interfaces JPA Repository
+│   │   │   │   ├── BeneficioRepository.java
+│   │   │   │   └── TransferenceRepository.java
+│   │   │   ├── service/             ← Serviços de negócio
+│   │   │   │   ├── BeneficioService.java
+│   │   │   │   └── TransferenceService.java
+│   │   │   └── dto/                 ← Data Transfer Objects
+│   │   │       └── BeneficioDTO.java
+│   │   └── resources/
+│   │       └── application.yml       ← Configurações do Spring Boot
+│   └── test/
+│       ├── java/com/example/backend/
+│       │   ├── controller/
+│       │   │   ├── BeneficioControllerTest.java
+│       │   │   └── TransferenceControllerTest.java
+│       │   ├── service/
+│       │   │   ├── BeneficioServiceTest.java
+│       │   │   └── TransferenceServiceTest.java
+│       │   └── repository/
+│       │       └── BeneficioRepositoryTest.java
+│       └── resources/
+│           └── application-test.yml  ← Configuração H2 para testes
+├── pom.xml                           ← Maven dependencies
+└── backend-module.iml                ← IntelliJ Module file
+
+2️⃣ Arquitetura
+
+O backend segue a arquitetura em camadas:
+
+Camada	Responsabilidade
+Entity	Mapeamento das tabelas do banco de dados (BeneficioEntity, TransferenceEntity)
+Repository	Interface para acesso a dados com Spring Data JPA (BeneficioRepository, TransferenceRepository)
+Service	Lógica de negócio (BeneficioService, TransferenceService)
+Controller	Endpoints REST que recebem requisições HTTP e chamam os serviços (BeneficioController, TransferenceController)
+DTO	Transferência de dados entre camada frontend e backend (BeneficioDTO)
+Testes	Testes unitários e de integração para services, controllers e repositórios
+3️⃣ Entities
+BeneficioEntity
+
+id: Long — chave primária
+
+nome: String — nome do benefício
+
+descricao: String — descrição
+
+saldo: BigDecimal — saldo atual
+
+ativa: Boolean — se o benefício está ativo
+
+valor: Double — valor referente (opcional)
+
+TransferenceEntity
+
+id: Long — chave primária
+
+origem: BeneficioEntity — benefício de origem
+
+destino: BeneficioEntity — benefício de destino
+
+valor: BigDecimal — valor transferido
+
+dataHora: LocalDateTime — data e hora da transferência
+
+4️⃣ DTOs
+BeneficioDTO
+
+Campos principais: id, nome, descricao, saldo, ativa, valor, fromId, toId, amount
+
+Usado para criar, atualizar e transferir benefícios.
+
+5️⃣ Services
+BeneficioService
+
+CRUD completo de benefícios
+
+Integração com EJB se necessário
+
+Validações básicas de dados
+
+TransferenceService
+
+Transfere saldo entre benefícios
+
+Validações:
+
+IDs diferentes
+
+Benefícios ativos
+
+Valor positivo
+
+Saldo suficiente
+
+Usa @Transactional para rollback automático
+
+Salva cada transferência em TransferenceEntity (histórico)
+
+6️⃣ Controllers
+BeneficioController
+
+Endpoints REST para CRUD de benefícios
+
+Exemplo:
+
+GET /api/beneficios — lista todos
+
+POST /api/beneficios — cria
+
+PUT /api/beneficios/{id} — atualiza
+
+DELETE /api/beneficios/{id} — remove
+
+TransferenceController
+
+Endpoint REST para transferência:
+
+POST /api/transferencias?fromId=1&toId=2&valor=300
+
+Valida saldo e atualiza benefícios
+
+Retorna mensagem de sucesso
+
+Endpoint de teste:
+
+GET /api/transferencias/teste — retorna string confirmando o controller ativo
+
+7️⃣ Repositórios
+
+BeneficioRepository — extends JpaRepository<BeneficioEntity, Long>
+
+TransferenceRepository — extends JpaRepository<TransferenceEntity, Long>
+
+Permitem acesso ao banco sem precisar escrever SQL.
+
+8️⃣ Testes
+
+Unitários (Mockito + JUnit 5)
+
+BeneficioServiceTest — cria benefício, busca por ID
+
+TransferenceServiceTest — transferência bem-sucedida e erro de saldo insuficiente
+
+BeneficioControllerTest — lista e cria benefícios
+
+TransferenceControllerTest — teste de sucesso e falha de transferência
+
+Integração
+
+BeneficioRepositoryTest — persiste e busca benefícios no H2 em memória
+
+Configuração para testes:
+
+src/test/resources/application-test.yml com banco H2 e ddl-auto: create-drop
+
+9️⃣ Observações importantes
+
+Rollback automático: @Transactional no TransferenceService garante consistência
+
+Validações no service para evitar inconsistências no saldo
+
+DTO opcional: apenas BeneficioDTO foi criado; TransferenceDTO não é obrigatório
+
+Teste de transferência: inclui cenário de sucesso e saldo insuficiente
+
+Integração futura: frontend Angular vai consumir os endpoints do backend via REST

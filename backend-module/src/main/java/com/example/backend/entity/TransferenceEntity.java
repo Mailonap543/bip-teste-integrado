@@ -1,59 +1,70 @@
 package com.example.backend.entity;
 
-
 import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.math.RoundingMode; // Importa RoundingMode para melhor prática
 
 @Entity
 @Table(name = "TRANSFERENCIA")
-public class TransferenceEntity implements Serializable {
+public class TransferenceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "CONTA_ORIGEM_ID", nullable = false)
-    private Long contaOrigemId;
+    // Campos de origem e destino
+    @Column(nullable = false)
+    private Long fromId;
 
-    @Column(name = "CONTA_DESTINO_ID", nullable = false)
-    private Long contaDestinoId;
+    @Column(nullable = false)
+    private Long toId;
 
+    // Valor da transferência
     @Column(nullable = false, precision = 15, scale = 2)
-    private Double valor;
+    private BigDecimal amount;
 
-    @Column(name = "DATA_TRANSFERENCIA", nullable = false)
-    private LocalDateTime dataTransferencia;
-
-    public TransferenceEntity() {}
-
-    public TransferenceEntity(Long contaOrigemId, Long contaDestinoId, Double valor) {
-        this.contaOrigemId = contaOrigemId;
-        this.contaDestinoId = contaDestinoId;
-        this.valor = valor;
-        this.dataTransferencia = LocalDateTime.now();
+    // Construtor Padrão (necessário pelo JPA)
+    public TransferenceEntity() {
     }
 
-
-    public Long getId() { return id; }
-    public Long getContaOrigemId() { return contaOrigemId; }
-    public Long getContaDestinoId() { return contaDestinoId; }
-    public Double getValor() { return valor; }
-    public LocalDateTime getDataTransferencia() { return dataTransferencia; }
-
-
-    public void setId(Long id) { this.id = id; }
-    public void setContaOrigemId(Long contaOrigemId) { this.contaOrigemId = contaOrigemId; }
-    public void setContaDestinoId(Long contaDestinoId) { this.contaDestinoId = contaDestinoId; }
-    public void setValor(Double valor) { this.valor = valor; }
-    public void setDataTransferencia(LocalDateTime dataTransferencia) { this.dataTransferencia = dataTransferencia; }
-
-    public void setFromId(Long id) {
+    // Construtor usado no Service
+    public TransferenceEntity(Long fromId, Long toId, Double amount) {
+        this.fromId = fromId;
+        this.toId = toId;
+        // Usa RoundingMode.HALF_UP para arredondamento padrão
+        this.amount = BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP);
     }
 
-    public void setToId(Long id) {
+    // Getters e Setters
+    public Long getId() {
+        return id;
     }
 
-    public void setAmount(Double amount) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(Long fromId) {
+        this.fromId = fromId;
+    }
+
+    public Long getToId() {
+        return toId;
+    }
+
+    public void setToId(Long toId) {
+        this.toId = toId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 }

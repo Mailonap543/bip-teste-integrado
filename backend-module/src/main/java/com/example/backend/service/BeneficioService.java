@@ -13,88 +13,78 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import static java.math.BigDecimal.valueOf;
-
 @Service
 public class BeneficioService {
 
     private final BeneficioRepository beneficioRepository;
     private final TransferenceRepository transferenceRepository;
 
-    public BeneficioService(BeneficioRepository beneficioRepository, TransferenceRepository transferenceRepository) {
+    public BeneficioService(BeneficioRepository beneficioRepository,
+                            TransferenceRepository transferenceRepository) {
         this.beneficioRepository = beneficioRepository;
         this.transferenceRepository = transferenceRepository;
     }
 
-    /**
-     * Cria um novo Benefício a partir de um DTO.
-     */
-    // CORREÇÃO: Tipo de retorno deve ser apenas BeneficioEntity
+
+
     public BeneficioEntity create(BeneficioDTO dto) {
         BeneficioEntity entity = new BeneficioEntity();
-
         entity.setTitular(dto.getNome());
 
-        // Corrigido para verificar se o valor é diferente de 0.0 (se o DTO for double primitivo)
-        entity.setValor(dto.getValor() != 0.0
-                ? valueOf(dto.getValor())
-                : BigDecimal.ZERO);
 
-        // Corrigido para verificar se é null (se o DTO for Boolean Wrapper)
+        BigDecimal valor = dto.getValor() != null
+                ? BigDecimal.valueOf(dto.getValor()).setScale(2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+        entity.setValor(valor);
+
+
         entity.setAtiva(dto.getAtiva() != null ? dto.getAtiva() : true);
 
-        // CORREÇÃO: Adicionando o retorno obrigatório
-        return (BeneficioEntity) beneficioRepository.save(entity);
+        return beneficioRepository.save(entity);
     }
 
-    /**
-     * Lista todos os Benefícios.
-     */
+
     public List<BeneficioEntity> listAll() {
-        // CORREÇÃO: Deve chamar o método do repositório
         return beneficioRepository.findAll();
     }
 
     /**
-     * Atualiza um Benefício existente.
+     * Atualiza um benefício existente
      */
-    // CORREÇÃO: Tipo de retorno deve ser apenas BeneficioEntity
     public BeneficioEntity update(Long id, BeneficioDTO dto) {
-        // CORREÇÃO: findByIdOrThrow já retorna o tipo correto
         BeneficioEntity entity = findByIdOrThrow(id);
 
-        entity.setTitular(dto.getNome());
-
-        entity.setValor(dto.getValor() != 0.0
-                ? valueOf(dto.getValor())
-                : BigDecimal.ZERO);
-
-        entity.setAtiva(dto.getAtiva() != null ? dto.getAtiva() : true);
-
-        return (BeneficioEntity) beneficioRepository.save(entity);
-    }
-
-    /**
-     * Deleta um Benefício pelo ID.
-     */
-    public void delete(Long id) {
-        // CORREÇÃO: Acesso via instância do repositório
-        if (!beneficioRepository.existsById(id)) {
-            throw new BusinessException("Benefício não encontrado: " + id);
+        if (dto.getNome() != null) {
+            entity.setTitular(dto.getNome());
         }
-        beneficioRepository.deleteById(id);
+
+        if (dto.getValor() != null) {
+            BigDecimal valor = BigDecimal.valueOf(dto.getValor()).setScale(2, RoundingMode.HALF_UP);
+            entity.setValor(valor);
+        }
+
+        if (dto.getAtiva() != null) {
+            entity.setAtiva(dto.getAtiva());
+        }
+
+        return beneficioRepository.save(entity);
     }
 
-    /**
-     * Realiza a transferência de valor entre dois Benefícios.
-     */
+
+    public void delete(Long id) {
+        // Encontra o benefício ou lança exceção (garantindo que ele exista)
+        BeneficioEntity entity = findByIdOrThrow(id);
+        beneficioRepository.deleteById(entity.getId());
+    }
+
+
     @Transactional
     public void transfer(Long fromId, Long toId, Double amount) {
         if (fromId == null || toId == null)
             throw new BusinessException("IDs devem ser informados");
         if (fromId.equals(toId))
             throw new BusinessException("Origem e destino iguais");
-        if (amount == null || amount.doubleValue() <= 0)
+        if (amount == null || amount <= 0)
             throw new BusinessException("Valor inválido para transferência");
 
         BeneficioEntity origem = findByIdOrThrow(fromId);
@@ -103,37 +93,38 @@ public class BeneficioService {
         if (Boolean.FALSE.equals(origem.getAtiva()) || Boolean.FALSE.equals(destino.getAtiva()))
             throw new BusinessException("Benefício(s) inativo(s). A transferência não pode ser realizada.");
 
-        BigDecimal valor = valueOf(amount);
+        BigDecimal valor = BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP);
 
+        // Comparação correta de BigDecimal
         if (origem.getValor().compareTo(valor) < 0) {
             throw new BusinessException("Saldo insuficiente no benefício de origem.");
         }
 
+        // Realiza o débito e o crédito, garantindo o arredondamento
         origem.setValor(round(origem.getValor().subtract(valor)));
         destino.setValor(round(destino.getValor().add(valor)));
 
         beneficioRepository.save(origem);
         beneficioRepository.save(destino);
 
+
         TransferenceEntity transferencia = new TransferenceEntity(origem.getId(), destino.getId(), amount);
-        // CORREÇÃO: Acesso via instância do repositório de transferência
         transferenceRepository.save(transferencia);
     }
 
-    /**
-     * Arredonda o valor BigDecimal.
-     */
+
     private BigDecimal round(BigDecimal val) {
         return val.setScale(2, RoundingMode.HALF_UP);
     }
 
-    public BeneficioEntity get(Long id) {
 
+    public BeneficioEntity get(Long id) {
         return findByIdOrThrow(id);
     }
+
+
     private BeneficioEntity findByIdOrThrow(Long id) {
-        // CORREÇÃO: Retorna o resultado da busca
-        return (BeneficioEntity) beneficioRepository.findById(id)
+        return beneficioRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Benefício não encontrado: " + id));
     }
 }

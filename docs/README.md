@@ -9,7 +9,7 @@ Criar solução completa em camadas (DB, EJB, Backend, Frontend), corrigindo bug
 - backend-module/: backend Spring Boot
 - frontend/: app Angular
 - docs/: instruções e critérios
-- .github/workflows/: CI
+- .GitHub/workflows/: CI
 
 ## ✅ Tarefas do candidato
 1. Executar db/schema.sql e db/seed.sql

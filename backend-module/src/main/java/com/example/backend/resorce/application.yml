@@ -1,14 +1,22 @@
 spring:
   datasource:
+
     url: jdbc:postgresql://localhost:5432/bipdb
     username: bipuser
     password: bippass
+
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
+
       ddl-auto: none
+
     show-sql: true
+
+    open-in-view: false
 
 app:
   ejb:
+
     enabled: true
     jndi-name: java:global/ejb-module/ContaEjbService!br.com.biptesteintegrado.ejb.service.ContaEjbService

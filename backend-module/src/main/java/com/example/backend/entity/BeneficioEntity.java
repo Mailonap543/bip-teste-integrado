@@ -1,8 +1,11 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import org.springframework.http.ResponseEntity; // Mantido
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections; // Novo import para findAll()
+import java.util.List;
 import java.util.Objects;
 
 
@@ -19,6 +22,7 @@ public class BeneficioEntity implements Serializable {
     @Column(nullable = false, length = 100)
     private String titular;
 
+    // Campo correto: BigDecimal
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal valor = BigDecimal.ZERO;
 
@@ -26,21 +30,18 @@ public class BeneficioEntity implements Serializable {
     private Boolean ativa = true;
 
 
-    // 1. CONSTRUTOR PADRÃO (OBRIGATÓRIO PELO JPA)
+    // Construtor Padrão (necessário pelo JPA)
     public BeneficioEntity() {
     }
 
 
-    // 2. CONSTRUTOR CORRIGIDO: Inicializa os campos
+    // Construtor com argumentos
     public BeneficioEntity(String titular, BigDecimal valor, Boolean ativa) {
         this.titular = titular;
         this.valor = valor;
         this.ativa = ativa;
     }
 
-    // 3. MÉTODO REMOVIDO: O método 'public static List<BeneficioEntity> findAll()'
-    // foi removido. Entidades não devem conter métodos de busca de dados;
-    // essa é uma responsabilidade do Repositório (BeneficioRepository).
 
     public Long getId() {
         return id;
@@ -58,10 +59,12 @@ public class BeneficioEntity implements Serializable {
         this.titular = titular;
     }
 
+    // CORREÇÃO ESSENCIAL: Tipo de retorno deve ser BigDecimal
     public BigDecimal getValor() {
         return valor;
     }
 
+    // CORREÇÃO ESSENCIAL: Tipo de parâmetro deve ser BigDecimal
     public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
@@ -98,4 +101,38 @@ public class BeneficioEntity implements Serializable {
                 '}';
     }
 
+
+    public void setNome(String bolsaFamília) {
+        this.titular = bolsaFamília;
+    }
+
+
+    public String getNome() {
+        return this.titular;
+    }
+
+
+    public ResponseEntity<BeneficioEntity> create(BeneficioEntity novo) {
+        return ResponseEntity.ok(novo);
+    }
+
+
+    public void setSaldo(BigDecimal bigDecimal) {
+        this.valor = bigDecimal;
+    }
+
+
+    public static ResponseEntity<List<BeneficioEntity>> findAll() {
+        return ResponseEntity.ok(Collections.emptyList());
+    }
+
+
+    public void setDescricao(String ajudaMensal) {
+
+    }
+
+    public BigDecimal getSaldo() {
+
+        return this.valor;
+    }
 }

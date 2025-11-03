@@ -6,7 +6,7 @@ public class BeneficioListDTO {
     private String nome;
     private Double valor;
 
-    // Getters e Setters
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

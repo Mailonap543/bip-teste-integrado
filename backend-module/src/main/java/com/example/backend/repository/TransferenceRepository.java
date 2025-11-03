@@ -11,8 +11,8 @@ import java.util.List;
 public interface TransferenceRepository extends JpaRepository<TransferenceEntity, Long> {
 
 
-    List<TransferenceEntity> findByContaOrigemId(Long contaOrigemId);
+    List<TransferenceEntity> findByFromId(Long fromId);
 
 
-    List<TransferenceEntity> findByContaDestinoId(Long contaDestinoId);
+    List<TransferenceEntity> findByToId(Long toId);
 }
