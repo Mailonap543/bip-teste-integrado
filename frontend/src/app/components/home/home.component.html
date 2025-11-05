@@ -1,0 +1,47 @@
+<div class="form-container">
+  <!-- Título dinâmico: editar ou novo benefício -->
+  <h2>{{ beneficio?.id ? 'Editar Benefício' : 'Novo Benefício' }}</h2>
+
+  <form [formGroup]="beneficioForm" (ngSubmit)="onSubmit()" class="beneficio-form">
+    <div class="form-group">
+      <label for="nome">Nome:</label>
+      <input id="nome" type="text" formControlName="nome" />
+      <div class="error" *ngIf="beneficioForm.get('nome')?.touched && beneficioForm.get('nome')?.invalid">
+        Nome é obrigatório e deve ter pelo menos 3 caracteres.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descricao">Descrição:</label>
+      <input id="descricao" type="text" formControlName="descricao" />
+      <div class="error" *ngIf="beneficioForm.get('descricao')?.touched && beneficioForm.get('descricao')?.invalid">
+        Descrição é obrigatória.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="saldo">Saldo:</label>
+      <input id="saldo" type="number" formControlName="saldo" />
+      <div class="error" *ngIf="beneficioForm.get('saldo')?.touched && beneficioForm.get('saldo')?.invalid">
+        Saldo não pode ser negativo.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="valor">Valor:</label>
+      <input id="valor" type="number" formControlName="valor" />
+      <div class="error" *ngIf="beneficioForm.get('valor')?.touched && beneficioForm.get('valor')?.invalid">
+        Valor é obrigatório.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label><input type="checkbox" formControlName="ativa" /> Ativa</label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="beneficioForm.invalid">Salvar</button>
+      <button type="button" (click)="onCancel()">Cancelar</button>
+    </div>
+  </form>
+</div>

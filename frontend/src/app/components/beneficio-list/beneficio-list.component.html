@@ -1,0 +1,33 @@
+<div class="list-container">
+  <button class="btn-novo" (click)="novoBeneficio()">Novo Benefício</button>
+
+  <div *ngIf="beneficioSelecionado">
+    <app-beneficio-form
+      [beneficio]="beneficioSelecionado"
+      (salvarBeneficio)="salvarBeneficioEvent($event)"
+      (cancelar)="cancelarEvent()">
+    </app-beneficio-form>
+  </div>
+
+  <table *ngIf="!beneficioSelecionado">
+    <thead>
+      <tr>
+        <th>ID</th><th>Nome</th><th>Descrição</th><th>Saldo</th><th>Ativo</th><th>Valor</th><th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let b of beneficios">
+        <td>{{ b.id }}</td>
+        <td>{{ b.nome }}</td>
+        <td>{{ b.descricao }}</td>
+        <td>{{ b.saldo }}</td>
+        <td>{{ b.ativa ? 'Sim' : 'Não' }}</td>
+        <td>{{ b.valor }}</td>
+        <td>
+          <button (click)="editar(b)">Editar</button>
+          <button (click)="excluir(b.id)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

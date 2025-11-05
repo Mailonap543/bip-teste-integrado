@@ -1,0 +1,16 @@
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  // Herda todas as configurações de base do seu tsconfig.json principal
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": []
+    // NÃO COLOCAMOS 'paths' ou 'baseUrl' aqui, para que herde a configuração correta do tsconfig.json
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
+}
