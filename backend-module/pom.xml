@@ -16,21 +16,24 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <surefire.argLine>-Dnet.bytebuddy.experimental=true</surefire.argLine>
     </properties>
 
     <dependencies>
+        <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!-- Banco de dados -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -43,6 +46,7 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Testes -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -54,22 +58,25 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.mailonap543.backend.BackendApplication</mainClass>
+                </configuration>
             </plugin>
 
+            <!-- Maven Surefire Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -77,7 +84,6 @@
                     <argLine>${surefire.argLine}</argLine>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
