@@ -35,11 +35,11 @@ jobs:
 
       - name: 📥 Instalar Dependências do Frontend
         run: npm install
-        working-directory: frontend-module/
+        working-directory: frontend/
 
       - name: 🏗️ Build do Frontend (Cria a pasta 'build' ou 'dist')
         run: npm run build
-        working-directory: frontend-module/
+        working-directory: frontend/
 
 
       - name: 💾 Upload do JAR do Backend como Artefato
@@ -52,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend-module/build/
+          path: frontend-/build/
