@@ -1,24 +1,29 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ApiResponseDTO;
 import com.example.backend.dto.BeneficioDTO;
 import com.example.backend.entity.BeneficioEntity;
-import com.example.backend.exception.BusinessException;
 import com.example.backend.service.BeneficioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/beneficios")
-@Tag(name = "Benefícios", description = "API para gestão de benefícios")
+@RequestMapping("/api/v1/beneficios")
+@Tag(name = "Benefícios v1", description = "API v1 para gestão de benefícios")
 public class BeneficioController {
 
+    private static final Logger log = LoggerFactory.getLogger(BeneficioController.class);
     private final BeneficioService service;
 
     public BeneficioController(BeneficioService service) {
@@ -26,61 +31,62 @@ public class BeneficioController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos os benefícios", description = "Retorna a lista completa de benefícios cadastrados")
+    @Operation(summary = "Listar todos os benefícios")
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
-    public ResponseEntity<List<BeneficioEntity>> listAll() {
-        return ResponseEntity.ok(service.listAll());
+    public ResponseEntity<ApiResponseDTO<List<BeneficioEntity>>> listAll() {
+        log.info("Listing all beneficios");
+        List<BeneficioEntity> list = service.listAll();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Benefícios listados com sucesso", list));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obter benefício por ID", description = "Retorna um benefício específico pelo seu ID")
-    @ApiResponse(responseCode = "200", description = "Benefício encontrado")
-    @ApiResponse(responseCode = "404", description = "Benefício não encontrado")
-    public ResponseEntity<BeneficioEntity> get(
+    @Operation(summary = "Obter benefício por ID")
+    public ResponseEntity<ApiResponseDTO<BeneficioEntity>> get(
             @Parameter(description = "ID do benefício") @PathVariable Long id) {
+        log.info("Getting beneficio by id: {}", id);
         BeneficioEntity b = service.get(id);
-        return b == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(b);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Benefício encontrado", b));
     }
 
     @PostMapping
-    @Operation(summary = "Criar novo benefício", description = "Cria um novo benefício no sistema")
-    @ApiResponse(responseCode = "201", description = "Benefício criado com sucesso")
-    @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    public ResponseEntity<BeneficioEntity> create(@RequestBody BeneficioDTO dto) {
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Criar novo benefício")
+    @ApiResponse(responseCode = "201", description = "Benefício criado")
+    public ResponseEntity<ApiResponseDTO<BeneficioEntity>> create(@Valid @RequestBody BeneficioDTO dto) {
+        log.info("Creating beneficio: {}", dto.getNome());
         BeneficioEntity b = service.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(b);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.ok("Benefício criado com sucesso", b));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar benefício", description = "Atualiza os dados de um benefício existente")
-    @ApiResponse(responseCode = "200", description = "Benefício atualizado com sucesso")
-    @ApiResponse(responseCode = "404", description = "Benefício não encontrado")
-    public ResponseEntity<BeneficioEntity> update(
-            @Parameter(description = "ID do benefício") @PathVariable Long id,
-            @RequestBody BeneficioDTO dto) {
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Atualizar benefício")
+    public ResponseEntity<ApiResponseDTO<BeneficioEntity>> update(
+            @PathVariable Long id, @Valid @RequestBody BeneficioDTO dto) {
+        log.info("Updating beneficio id: {}", id);
         BeneficioEntity b = service.update(id, dto);
-        return ResponseEntity.ok(b);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Benefício atualizado com sucesso", b));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Remover benefício", description = "Remove um benefício do sistema")
-    @ApiResponse(responseCode = "204", description = "Benefício removido com sucesso")
-    @ApiResponse(responseCode = "404", description = "Benefício não encontrado")
-    public ResponseEntity<Void> delete(
-            @Parameter(description = "ID do benefício") @PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Remover benefício")
+    public ResponseEntity<ApiResponseDTO<Void>> delete(@PathVariable Long id) {
+        log.info("Deleting beneficio id: {}", id);
         service.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Benefício removido com sucesso", null));
     }
 
     @PostMapping("/transfer/{origemId}/{destinoId}/{valor}")
-    @Operation(summary = "Transferir valor", description = "Transfere valor entre dois benefícios")
-    @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso")
-    @ApiResponse(responseCode = "400", description = "Erro na transferência (saldo insuficiente, IDs inválidos, etc.)")
-    public ResponseEntity<Void> transfer(
-            @Parameter(description = "ID do benefício de origem") @PathVariable("origemId") Long origemId,
-            @Parameter(description = "ID do benefício de destino") @PathVariable("destinoId") Long destinoId,
-            @Parameter(description = "Valor a ser transferido") @PathVariable("valor") Double valor) {
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Transferir valor entre benefícios")
+    public ResponseEntity<ApiResponseDTO<Void>> transfer(
+            @PathVariable Long origemId,
+            @PathVariable Long destinoId,
+            @PathVariable Double valor) {
+        log.info("Transfer request: from {} to {} amount {}", origemId, destinoId, valor);
         service.transfer(origemId, destinoId, valor);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Transferência realizada com sucesso", null));
     }
 }

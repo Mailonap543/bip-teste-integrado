@@ -1,46 +1,44 @@
-# Sistema de Benefícios - Desafio Fullstack Integrado
+# Sistema de Beneficios - Desafio Fullstack Integrado
 
 ## Sobre o Projeto
 
-Sistema completo de gestão de benefícios com arquitetura em camadas:
+Sistema completo de gestao de beneficios com arquitetura enterprise em camadas:
+
 - **Banco de Dados**: PostgreSQL com schema relacional
-- **Módulo EJB**: Serviço Enterprise JavaBeans com transferências seguras
-- **Backend**: API REST com Spring Boot 3.2.5
-- **Frontend**: Aplicação Angular 20 com componentes standalone
+- **Módulo EJB**: Servico Enterprise JavaBeans com transferencias seguras (pessimistic locking)
+- **Backend**: API REST com Spring Boot 3.2.5, JWT Security, Swagger/OpenAPI
+- **Frontend**: Aplicacao Angular 20 com componentes standalone, auth guards, interceptors
+- **CI/CD**: GitHub Actions com build, test, Docker
 
 ## Arquitetura
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                   Frontend (Angular)                │
-│  ┌──────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  Home    │  │  Benefícios  │  │ Transferência│  │
-│  └──────────┘  └──────────────┘  └──────────────┘  │
-└──────────────────────┬──────────────────────────────┘
-                       │ HTTP/REST
-┌──────────────────────┴──────────────────────────────┐
-│              Backend (Spring Boot)                  │
-│  ┌────────────┐ ┌────────────┐ ┌────────────────┐  │
-│  │ Controller │ │  Service   │ │  Repository    │  │
-│  └────────────┘ └────────────┘ └────────────────┘  │
-│  ┌────────────┐ ┌────────────┐ ┌────────────────┐  │
-│  │  Entity    │ │    DTO     │ │   Exception    │  │
-│  └────────────┘ └────────────┘ └────────────────┘  │
-└──────────────────────┬──────────────────────────────┘
-                       │ JPA/Hibernate
-┌──────────────────────┴──────────────────────────────┐
-│              Módulo EJB                             │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  BeneficioEjbService (Pessimistic Locking)   │   │
-│  └──────────────────────────────────────────────┘   │
-└──────────────────────┬──────────────────────────────┘
-                       │ JDBC
-┌──────────────────────┴──────────────────────────────┐
-│              PostgreSQL Database                    │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────┐    │
-│  │ BENEFICIO│  │  CONTA   │  │ TRANSFERENCIA  │    │
-│  └──────────┘  └──────────┘  └────────────────┘    │
-└─────────────────────────────────────────────────────┘
+bip-teste-integrado/
+├── .github/workflows/       # CI/CD Pipeline (GitHub Actions)
+├── backend-module/          # Spring Boot Backend
+│   ├── src/main/java/com/example/backend/
+│   │   ├── config/          # Security, Swagger, CORS, Exception Handler
+│   │   ├── controller/      # REST Controllers (v1 API)
+│   │   ├── dto/             # Data Transfer Objects
+│   │   ├── entity/          # JPA Entities (Beneficio, Transference, Usuario)
+│   │   ├── exception/       # Custom Exceptions
+│   │   ├── repository/      # Spring Data Repositories
+│   │   ├── security/        # JWT Provider, Auth Filter, UserDetailsService
+│   │   └── service/         # Business Logic
+│   └── src/test/            # Unit & Integration Tests
+├── ejb-module/              # EJB Service Module
+│   └── src/main/java/com/example/ejb/
+├── frontend/                # Angular 20 Frontend
+│   └── src/app/
+│       ├── components/      # UI Components (home, login, beneficio-list, etc.)
+│       ├── guards/          # Auth Guard
+│       ├── interceptors/    # JWT Interceptor
+│       ├── models/          # TypeScript Interfaces
+│       └── service/         # HTTP Services
+├── db/                      # Database Scripts (schema.sql, seed.sql)
+├── docs/                    # Documentation
+├── docker-compose.yml       # Docker Orchestration
+└── README.md
 ```
 
 ## Pré-requisitos
@@ -49,9 +47,8 @@ Sistema completo de gestão de benefícios com arquitetura em camadas:
 - Maven 3.8+
 - Node.js 18+
 - PostgreSQL 14+ (ou Docker)
-- Angular CLI 20
 
-## Configuração do Banco de Dados
+## Configuração Rápida
 
 ### Opção 1: Docker (Recomendado)
 
@@ -59,144 +56,138 @@ Sistema completo de gestão de benefícios com arquitetura em camadas:
 docker-compose up -d
 ```
 
-### Opção 2: PostgreSQL Local
+Acesse:
+- Frontend: http://localhost:4200
+- Backend: http://localhost:8080
+- Swagger: http://localhost:8080/swagger-ui.html
 
-1. Criar o banco de dados:
-```sql
-CREATE DATABASE bipdb;
-```
+### Opção 2: Desenvolvimento Local
 
-2. Executar os scripts:
-```bash
-psql -U postgres -d bipdb -f db/schema.sql
-psql -U postgres -d bipdb -f db/seed.sql
-```
+**1. Banco de Dados (H2 em memoria para dev):**
+O backend usa H2 por default em desenvolvimento. Nenhuma configuracao extra necessaria.
 
-## Executando a Aplicação
-
-### Backend (Spring Boot)
-
+**2. Backend:**
 ```bash
 cd backend-module
 mvn clean install
 mvn spring-boot:run
 ```
 
-O backend estará disponível em: http://localhost:8080
-
-### Frontend (Angular)
-
+**3. Frontend:**
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-O frontend estará disponível em: http://localhost:4200
+## Autenticacao
 
-## API REST - Endpoints
+O sistema usa JWT para autenticacao.
 
-### Benefícios (`/api/beneficios`)
+**Usuarios padrao (seed):**
 
-| Método | Endpoint                          | Descrição            |
-|--------|-----------------------------------|----------------------|
-| GET    | `/api/beneficios`                 | Listar todos         |
-| GET    | `/api/beneficios/{id}`            | Obter por ID         |
-| POST   | `/api/beneficios`                 | Criar novo           |
-| PUT    | `/api/beneficios/{id}`            | Atualizar            |
-| DELETE | `/api/beneficios/{id}`            | Remover              |
-| POST   | `/api/beneficios/transfer/{from}/{to}/{valor}` | Transferir |
+| Usuario | Senha | Roles |
+|---------|-------|-------|
+| admin | admin123 | ROLE_ADMIN, ROLE_USER |
+| user | user123 | ROLE_USER |
 
-### Transferências (`/api/transferencias`)
+**Endpoints de Auth:**
 
-| Método | Endpoint                  | Descrição                    |
-|--------|---------------------------|------------------------------|
-| POST   | `/api/transferencias`     | Realizar transferência       |
-| GET    | `/api/transferencias/teste` | Health check               |
+| Metodo | Endpoint | Descricao | Auth |
+|--------|----------|-----------|------|
+| POST | /api/auth/login | Login | Nao |
+| POST | /api/auth/register | Registro | Nao |
+| GET | /api/auth/me | Usuario atual | Sim |
+
+## API REST - Endpoints v1
+
+### Beneficios (/api/v1/beneficios)
+
+| Metodo | Endpoint | Descricao | Role |
+|--------|----------|-----------|------|
+| GET | /api/v1/beneficios | Listar todos | Publico |
+| GET | /api/v1/beneficios/{id} | Obter por ID | Publico |
+| POST | /api/v1/beneficios | Criar novo | USER, ADMIN |
+| PUT | /api/v1/beneficios/{id} | Atualizar | USER, ADMIN |
+| DELETE | /api/v1/beneficios/{id} | Remover | ADMIN |
+| POST | /api/v1/beneficios/transfer/{from}/{to}/{valor} | Transferir | USER, ADMIN |
+
+### Transferencias (/api/v1/transferencias)
+
+| Metodo | Endpoint | Descricao | Role |
+|--------|----------|-----------|------|
+| POST | /api/v1/transferencias | Transferir (body JSON) | USER, ADMIN |
+| GET | /api/v1/transferencias/teste | Health check | Publico |
 
 ### Swagger/OpenAPI
 
-Documentação interativa disponível em:
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - API Docs: http://localhost:8080/api-docs
 
-## Estrutura do Projeto
+### Monitoramento (Actuator)
 
-```
-bip-teste-integrado/
-├── backend-module/          # Spring Boot Backend
-│   ├── src/main/java/com/example/backend/
-│   │   ├── config/          # CORS, Swagger, Exception Handler
-│   │   ├── controller/      # REST Controllers
-│   │   ├── dto/             # Data Transfer Objects
-│   │   ├── entity/          # JPA Entities
-│   │   ├── exception/       # Custom Exceptions
-│   │   ├── repository/      # Spring Data Repositories
-│   │   └── service/         # Business Logic
-│   └── src/test/            # Unit & Integration Tests
-├── ejb-module/              # EJB Service Module
-│   └── src/main/java/com/example/ejb/
-│       ├── entity/          # EJB Entities
-│       └── BeneficioEjbService.java
-├── frontend/                # Angular Frontend
-│   └── src/app/
-│       ├── components/      # UI Components
-│       ├── models/          # TypeScript Interfaces
-│       ├── service/         # HTTP Services
-│       └── app.routes.ts    # Route Configuration
-├── db/                      # Database Scripts
-│   ├── schema.sql           # Table Definitions
-│   └── seed.sql             # Test Data
-├── docs/                    # Documentation
-├── docker-compose.yml       # Docker Configuration
-└── README.md
-```
+- Health: http://localhost:8080/actuator/health
+- Metrics: http://localhost:8080/actuator/metrics
 
-## Correção do Bug EJB
+## Seguranca
 
-O módulo EJB original continha um bug crítico na transferência:
-- **Problema**: Não verificava saldo antes de transferir, sem locking
-- **Solução**: Implementada verificação de saldo + `LockModeType.PESSIMISTIC_WRITE`
-
-Detalhes da correção em `ejb-module/src/main/java/com/example/ejb/BeneficioEjbService.java`:
-- Verificação de saldo insuficiente
-- Pessimistic Locking para consistência concorrente
-- Validação de benefícios ativos
-- Tratamento de erros com mensagens descritivas
+- **JWT**: Tokens stateless com expiracao configuravel
+- **Spring Security**: Role-based access control (RBAC)
+- **BCrypt**: Senhas criptografadas
+- **CORS**: Configurado para localhost:4200
+- **Validacao**: Jakarta Validation nos DTOs
+- **Exception Handler**: Respostas padronizadas de erro
 
 ## Testes
 
 ### Backend
-
 ```bash
 cd backend-module
 mvn test
 ```
 
-Cobertura de testes inclui:
-- Unitários para Services (CRUD + Transferência)
-- Unitários para Controllers
-- Cenários de erro (saldo insuficiente, IDs inválidos)
-
 ### Frontend
-
 ```bash
 cd frontend
 npm test
 ```
 
+## CI/CD
+
+Pipeline GitHub Actions (.github/workflows/ci.yml):
+1. Backend build + test (Java 17, Maven)
+2. Frontend build + test (Node 20, npm)
+3. Docker build (apenas em main)
+
 ## Tecnologias
 
-| Camada      | Tecnologia                     |
-|-------------|--------------------------------|
-| Frontend    | Angular 20, TypeScript, RxJS   |
-| Backend     | Spring Boot 3.2.5, Java 17     |
-| EJB         | Jakarta EJB, JPA, Hibernate    |
-| Database    | PostgreSQL, H2 (testes)        |
-| Build       | Maven, npm                     |
-| CI/CD       | GitHub Actions                 |
-| Qualidade   | Qodana                         |
+| Camada | Tecnologia | Versao |
+|--------|-----------|--------|
+| Frontend | Angular | 20.x |
+| Frontend HTTP | HttpClient + RxJS | - |
+| Frontend Auth | JWT Interceptor + Guard | - |
+| Backend | Spring Boot | 3.2.5 |
+| Backend Security | Spring Security + JWT | - |
+| Backend API | Spring Web + Swagger | - |
+| EJB | Jakarta EJB + JPA | - |
+| Database | PostgreSQL / H2 | 15 / - |
+| Build | Maven / npm | - |
+| CI/CD | GitHub Actions | - |
+| Container | Docker + Docker Compose | - |
 
-## Licença
+## Variaveis de Ambiente
 
-Projeto desenvolvido para fins de avaliação técnica.
+| Variavel | Default | Descricao |
+|----------|---------|-----------|
+| SPRING_PROFILES_ACTIVE | dev | Perfil (dev/prod) |
+| SPRING_DATASOURCE_URL | jdbc:h2:mem:bipdb | URL do banco |
+| SPRING_DATASOURCE_USERNAME | sa | Usuario do banco |
+| SPRING_DATASOURCE_PASSWORD | - | Senha do banco |
+| JWT_SECRET | (see application.yml) | Chave secreta JWT |
+| JWT_ACCESS_TOKEN_VALIDITY | 3600000 | Validade access token (ms) |
+| JWT_REFRESH_TOKEN_VALIDITY | 86400000 | Validade refresh token (ms) |
+| SERVER_PORT | 8080 | Porta do servidor |
+
+## Licenca
+
+Projeto desenvolvido para fins de avaliacao tecnica.

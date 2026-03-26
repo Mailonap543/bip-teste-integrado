@@ -19,6 +19,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - bip-network
 
   backend:
     build:
@@ -33,10 +35,18 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_PROFILES_ACTIVE: prod
+      JWT_SECRET: bip-teste-integrado-secret-key-must-be-at-least-256-bits-long-for-hs256
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - bip-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
@@ -48,6 +58,12 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - bip-network
 
 volumes:
   postgres_data:
+
+networks:
+  bip-network:
+    driver: bridge

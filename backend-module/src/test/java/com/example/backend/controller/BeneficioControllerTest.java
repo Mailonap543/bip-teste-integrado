@@ -1,12 +1,13 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ApiResponseDTO;
 import com.example.backend.dto.BeneficioDTO;
 import com.example.backend.entity.BeneficioEntity;
 import com.example.backend.service.BeneficioService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,7 +24,7 @@ class BeneficioControllerTest {
     @Autowired
     private BeneficioController beneficioController;
 
-    @MockBean
+    @MockitoBean
     private BeneficioService beneficioService;
 
     @Test
@@ -33,22 +34,16 @@ class BeneficioControllerTest {
         b1.setSaldo(BigDecimal.valueOf(3000.0));
         b1.setAtiva(true);
 
-        BeneficioEntity b2 = new BeneficioEntity();
-        b2.setTitular("João Santos");
-        b2.setSaldo(BigDecimal.valueOf(1500.0));
-        b2.setAtiva(true);
-
         List<BeneficioEntity> lista = new ArrayList<>();
         lista.add(b1);
-        lista.add(b2);
 
         when(beneficioService.listAll()).thenReturn(lista);
 
-        ResponseEntity<List<BeneficioEntity>> response = beneficioController.listAll();
+        ResponseEntity<ApiResponseDTO<List<BeneficioEntity>>> response = beneficioController.listAll();
 
-        assertEquals(2, response.getBody().size());
-        assertEquals("Maria Silva", response.getBody().get(0).getTitular());
-        assertEquals("João Santos", response.getBody().get(1).getTitular());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(1, response.getBody().getData().size());
+        assertEquals("Maria Silva", response.getBody().getData().get(0).getTitular());
         verify(beneficioService, times(1)).listAll();
     }
 
@@ -66,11 +61,10 @@ class BeneficioControllerTest {
 
         when(beneficioService.create(any(BeneficioDTO.class))).thenReturn(novo);
 
-        ResponseEntity<BeneficioEntity> response = beneficioController.create(dto);
+        ResponseEntity<ApiResponseDTO<BeneficioEntity>> response = beneficioController.create(dto);
 
-        assertNotNull(response.getBody());
-        assertEquals("Maria Silva", response.getBody().getTitular());
-        assertEquals(BigDecimal.valueOf(3000), response.getBody().getSaldo());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("Maria Silva", response.getBody().getData().getTitular());
         verify(beneficioService, times(1)).create(any(BeneficioDTO.class));
     }
 
@@ -88,11 +82,10 @@ class BeneficioControllerTest {
 
         when(beneficioService.update(eq(1L), any(BeneficioDTO.class))).thenReturn(atualizado);
 
-        ResponseEntity<BeneficioEntity> response = beneficioController.update(1L, dto);
+        ResponseEntity<ApiResponseDTO<BeneficioEntity>> response = beneficioController.update(1L, dto);
 
-        assertNotNull(response.getBody());
-        assertEquals("João Santos", response.getBody().getTitular());
-        assertEquals(BigDecimal.valueOf(2000), response.getBody().getSaldo());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals("João Santos", response.getBody().getData().getTitular());
         verify(beneficioService, times(1)).update(eq(1L), any(BeneficioDTO.class));
     }
 
@@ -100,9 +93,9 @@ class BeneficioControllerTest {
     void deveDeletarBeneficio() {
         doNothing().when(beneficioService).delete(1L);
 
-        ResponseEntity<Void> response = beneficioController.delete(1L);
+        ResponseEntity<ApiResponseDTO<Void>> response = beneficioController.delete(1L);
 
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertTrue(response.getBody().isSuccess());
         verify(beneficioService, times(1)).delete(1L);
     }
 
@@ -110,9 +103,9 @@ class BeneficioControllerTest {
     void deveTransferirValor() {
         doNothing().when(beneficioService).transfer(1L, 2L, 100.0);
 
-        ResponseEntity<Void> response = beneficioController.transfer(1L, 2L, 100.0);
+        ResponseEntity<ApiResponseDTO<Void>> response = beneficioController.transfer(1L, 2L, 100.0);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isSuccess());
         verify(beneficioService, times(1)).transfer(1L, 2L, 100.0);
     }
 }

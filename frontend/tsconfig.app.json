@@ -10,7 +10,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "importHelpers": true,
@@ -22,12 +22,6 @@
       "dom"
     ]
   },
-  "exclude": [
-    "src/server.ts",
-    "src/main.server.ts",
-    "src/app/app.config.server.ts",
-    "src/app/app.routes.server_OLD.ts"
-  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

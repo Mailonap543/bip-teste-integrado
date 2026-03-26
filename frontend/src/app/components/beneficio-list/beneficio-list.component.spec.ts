@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { BeneficioListComponent } from './beneficio-list.component';
 import { BeneficioService } from '../../service/beneficio.service';
@@ -23,7 +24,8 @@ describe('BeneficioListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, BeneficioListComponent],
       providers: [
-        { provide: BeneficioService, useClass: MockBeneficioService }
+        { provide: BeneficioService, useClass: MockBeneficioService },
+        provideAnimations()
       ]
     }).compileComponents();
 
@@ -41,15 +43,17 @@ describe('BeneficioListComponent', () => {
     expect(component.beneficios[0].titular).toBe('Maria Silva');
   });
 
-  it('should set beneficioSelecionado on novoBeneficio', () => {
-    component.novoBeneficio();
-    expect(component.beneficioSelecionado).toBeTruthy();
-    expect(component.beneficioSelecionado?.titular).toBe('');
+  it('should set selecionado on novo', () => {
+    component.novo();
+    expect(component.selecionado).toBeTruthy();
+    expect(component.selecionado?.titular).toBe('');
+    expect(component.editando).toBeTrue();
   });
 
-  it('should clear beneficioSelecionado on cancelarEvent', () => {
-    component.beneficioSelecionado = { id: 1, titular: 'Test', saldo: 100, ativa: true };
-    component.cancelarEvent();
-    expect(component.beneficioSelecionado).toBeNull();
+  it('should clear editando state', () => {
+    component.selecionado = { id: 1, titular: 'Test', saldo: 100, ativa: true };
+    component.editando = true;
+    component.editando = false;
+    expect(component.editando).toBeFalse();
   });
 });

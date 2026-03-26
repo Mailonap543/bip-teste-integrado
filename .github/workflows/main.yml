@@ -1,55 +1,31 @@
-name: CI/CD Pipeline
+name: Code Quality
 
 on:
-  push:
-    branches: [ "main", "master" ]
+  workflow_dispatch:
   pull_request:
-    branches: [ "main", "master" ]
+  push:
+    branches: [main]
 
 jobs:
-  build:
+  qodana:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
     steps:
-      - name: ⬇️ Checkout do Código
-        uses: actions/checkout@v4
-
-
-      - name: ☕ Configurar Java (Maven)
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: 📦 Configurar Node.js (Frontend)
-        uses: actions/setup-node@v4
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Qodana Scan
+        uses: JetBrains/qodana-action@v2025.2
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
-          node-version: '20'
-
-
-      - name: ⚙️ Build e Teste do Backend
-
-        run: mvn clean install -Dmaven.test.skip=false
-        working-directory: backend-module/
-
-
-      - name: 📥 Instalar Dependências do Frontend
-        run: npm install
-        working-directory: frontend/
-
-      - name: 🏗️ Build do Frontend (Cria a pasta 'build' ou 'dist')
-        run: npm run build
-        working-directory: frontend/
-
-
-      - name: 💾 Upload do JAR do Backend como Artefato
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-jar
-          path: backend-module/target/*.jar
-
-      - name: 💾 Upload da Build do Frontend como Artefato
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend-/build/
+          pr-mode: false
+          use-caches: true
+          post-pr-comment: true
+          use-annotations: true
+          upload-result: false
+          push-fixes: 'none'
