@@ -1,16 +1,29 @@
-<h1>Bem-vindo ao Sistema de Benefícios</h1>
+<header class="app-header">
+  <div class="header-content">
+    <a routerLink="/" class="logo">
+      Sistema de Beneficios
+    </a>
+    <nav class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        Inicio
+      </a>
+      <a routerLink="/beneficios" routerLinkActive="active">
+        Beneficios
+      </a>
+      <a routerLink="/transferencias" routerLinkActive="active">
+        Transferencias
+      </a>
+      <a routerLink="/about" routerLinkActive="active">
+        Sobre
+      </a>
+    </nav>
+  </div>
+</header>
 
-<nav>
-  <a routerLink="/">🏠 Início</a> |
-  <a routerLink="/about">ℹ️ Sobre</a> |
-  <a routerLink="/beneficios">💰 Benefícios</a>
-</nav>
+<main class="app-main">
+  <router-outlet></router-outlet>
+</main>
 
-<hr>
-
-<!-- Aqui o Angular renderiza as páginas -->
-<router-outlet></router-outlet>
-
-<footer>
-  <p>&copy; 2025 Sistema de Benefícios</p>
+<footer class="app-footer">
+  <p>2025 Sistema de Beneficios - Desafio Fullstack Integrado</p>
 </footer>

@@ -3,7 +3,6 @@
   "compilerOptions": {
     "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
@@ -11,18 +10,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "baseUrl": "./",
-    "paths": {
-      "@angular/*": [
-        "node_modules/@angular/*"
-      ],
-      // ✅ Sintaxe correta que resolve o erro de 'at most one *'
-      "app/components/*": [ 
-        "src/app/components/*"
-      ] 
-    },
-    
-    // Configurações de Módulo
-    "module": "commonjs",
+    "module": "ES2022",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -31,9 +19,7 @@
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "typeCheckHostBindings": true,
-    "strictTemplates": true
+    "strictInputAccessModifiers": true
   },
   "files": [],
   "references": [

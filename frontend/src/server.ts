@@ -5,7 +5,8 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 // ✅ CORREÇÃO 1: Importa os tipos Request, Response e NextFunction do Express
-import express, { Request, Response, NextFunction } from 'express'; 
+import * as express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');

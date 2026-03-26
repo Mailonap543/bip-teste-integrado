@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class TransferenceService {
@@ -22,12 +23,21 @@ public class TransferenceService {
         this.transferenceRepository = transferenceRepository;
     }
 
-
     @Transactional
     public void transferir(Long fromId, Long toId, BigDecimal valor) {
+        if (fromId == null || toId == null) {
+            throw new BusinessException("IDs de origem e destino são obrigatórios");
+        }
+
         if (fromId.equals(toId)) {
             throw new BusinessException("Não é possível transferir para o mesmo benefício");
         }
+
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("O valor da transferência deve ser positivo");
+        }
+
+        valor = valor.setScale(2, RoundingMode.HALF_UP);
 
         BeneficioEntity origem = beneficioRepository.findById(fromId)
                 .orElseThrow(() -> new BusinessException("Benefício de origem não encontrado"));
@@ -39,23 +49,17 @@ public class TransferenceService {
             throw new BusinessException("Ambos os benefícios devem estar ativos");
         }
 
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessException("O valor da transferência deve ser positivo");
-        }
-
         if (origem.getSaldo().compareTo(valor) < 0) {
             throw new BusinessException("Saldo insuficiente para transferência");
         }
 
-        // Atualiza saldos
-        origem.setSaldo(origem.getSaldo().subtract(valor));
-        destino.setSaldo(destino.getSaldo().add(valor));
+        origem.setSaldo(origem.getSaldo().subtract(valor).setScale(2, RoundingMode.HALF_UP));
+        destino.setSaldo(destino.getSaldo().add(valor).setScale(2, RoundingMode.HALF_UP));
 
-        // Salva no banco (lock é tratado pelo @Transactional e JPA)
         beneficioRepository.save(origem);
         beneficioRepository.save(destino);
 
-        TransferenceEntity t = null;
+        TransferenceEntity t = new TransferenceEntity(fromId, toId, valor);
         transferenceRepository.save(t);
     }
 }

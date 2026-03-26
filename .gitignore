@@ -1,0 +1,57 @@
+# Java
+target/
+*.class
+*.jar
+*.war
+*.log
+*.ear
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+*.ipr
+*.iws
+
+# Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.sass-cache/
+frontend/coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+._*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+docker-compose.override.yml
+
+# Build artifacts
+build/
+out/
+
+# Test coverage
+coverage/
+htmlcov/

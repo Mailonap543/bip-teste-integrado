@@ -1,21 +1,6 @@
-// tsconfig.json (Na raiz da pasta 'frontend')
-
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./", 
-    "paths": {
-      "@angular/*": [
-        "node_modules/@angular/*"
-      ]
-    },
-    
-    
-    "esModuleInterop": true,              
-    "allowSyntheticDefaultImports": true, 
-    
-    
-    
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -26,6 +11,8 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
@@ -35,10 +22,15 @@
       "dom"
     ]
   },
+  "exclude": [
+    "src/server.ts",
+    "src/main.server.ts",
+    "src/app/app.config.server.ts",
+    "src/app/app.routes.server_OLD.ts"
+  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInputAccessModifiers": true
   }
 }

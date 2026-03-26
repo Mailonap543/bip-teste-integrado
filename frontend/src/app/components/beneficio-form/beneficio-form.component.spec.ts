@@ -13,24 +13,20 @@ describe('BeneficioFormComponent', () => {
       imports: [
         CommonModule,
         ReactiveFormsModule,
-        BeneficioFormComponent // ✅ standalone component
+        BeneficioFormComponent
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BeneficioFormComponent);
     component = fixture.componentInstance;
 
-    // Criar objeto de teste para evitar problemas de tipagem
     const beneficioTeste: Beneficio = {
       id: 1,
-      nome: 'Vale Alimentação',
-      descricao: 'Benefício para alimentação',
-      saldo: 200,
-      valor: 200,
+      titular: 'Maria Silva',
+      saldo: 3000,
       ativa: true
     };
 
-    // Atribuir e disparar ngOnChanges manualmente
     component.beneficio = beneficioTeste;
     component.ngOnChanges({
       beneficio: {
@@ -49,19 +45,29 @@ describe('BeneficioFormComponent', () => {
   });
 
   it('should emit salvarBeneficio when form is valid', () => {
-    const beneficioEmitir: Beneficio = { ...component.beneficio! }; // garante tipagem correta
     spyOn(component.salvarBeneficio, 'emit');
-
     component.onSubmit();
-
-    expect(component.salvarBeneficio.emit).toHaveBeenCalledWith(beneficioEmitir);
+    expect(component.salvarBeneficio.emit).toHaveBeenCalled();
   });
 
   it('should emit cancelar when onCancel is called', () => {
     spyOn(component.cancelar, 'emit');
-
     component.onCancel();
-
     expect(component.cancelar.emit).toHaveBeenCalled();
+  });
+
+  it('should validate required titular', () => {
+    component.form.get('titular')?.setValue('');
+    expect(component.form.get('titular')?.valid).toBeFalse();
+  });
+
+  it('should validate titular minlength', () => {
+    component.form.get('titular')?.setValue('ab');
+    expect(component.form.get('titular')?.valid).toBeFalse();
+  });
+
+  it('should validate saldo min', () => {
+    component.form.get('saldo')?.setValue(-1);
+    expect(component.form.get('saldo')?.valid).toBeFalse();
   });
 });

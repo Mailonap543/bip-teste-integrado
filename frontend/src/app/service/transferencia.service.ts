@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Transferencia } from '../models/transferencia.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,8 @@ export class TransferenciaService {
 
   constructor(private http: HttpClient) { }
 
-  transferir(fromId: number, toId: number, valor: number): Observable<any> {
-    let params = new HttpParams()
-      .set('fromId', fromId)
-      .set('toId', toId)
-      .set('valor', valor);
-    return this.http.post(this.apiUrl, {}, { params });
+  transferir(fromId: number, toId: number, amount: number): Observable<string> {
+    const body: Transferencia = { fromId, toId, amount };
+    return this.http.post(this.apiUrl, body, { responseType: 'text' });
   }
 }

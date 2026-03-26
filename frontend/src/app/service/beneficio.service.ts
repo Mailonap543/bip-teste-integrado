@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BeneficioService {
-  private baseUrl = 'http://localhost:8080/api/beneficios'; // ajuste se necessário
+  private baseUrl = 'http://localhost:8080/api/beneficios';
 
   constructor(private http: HttpClient) {}
 
@@ -19,15 +19,30 @@ export class BeneficioService {
     return this.http.get<Beneficio>(`${this.baseUrl}/${id}`);
   }
 
-  create(beneficio: Beneficio): Observable<Beneficio> {
-    return this.http.post<Beneficio>(this.baseUrl, beneficio);
+  create(beneficio: Partial<Beneficio>): Observable<Beneficio> {
+    return this.http.post<Beneficio>(this.baseUrl, {
+      nome: beneficio.titular,
+      saldo: beneficio.saldo,
+      ativa: beneficio.ativa
+    });
   }
 
   update(beneficio: Beneficio): Observable<Beneficio> {
-    return this.http.put<Beneficio>(`${this.baseUrl}/${beneficio.id}`, beneficio);
+    return this.http.put<Beneficio>(`${this.baseUrl}/${beneficio.id}`, {
+      nome: beneficio.titular,
+      saldo: beneficio.saldo,
+      ativa: beneficio.ativa
+    });
   }
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  transfer(origemId: number, destinoId: number, valor: number): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/transfer/${origemId}/${destinoId}/${valor}`,
+      {}
+    );
   }
 }

@@ -29,13 +29,13 @@ class BeneficioControllerTest {
     @Test
     void deveListarTodosBeneficios() {
         BeneficioEntity b1 = new BeneficioEntity();
-        b1.setTitular("Bolsa Família");
-        b1.setValor(BigDecimal.valueOf(100.0));
+        b1.setTitular("Maria Silva");
+        b1.setSaldo(BigDecimal.valueOf(3000.0));
         b1.setAtiva(true);
 
         BeneficioEntity b2 = new BeneficioEntity();
-        b2.setTitular("Auxílio Gás");
-        b2.setValor(BigDecimal.valueOf(50.0));
+        b2.setTitular("João Santos");
+        b2.setSaldo(BigDecimal.valueOf(1500.0));
         b2.setAtiva(true);
 
         List<BeneficioEntity> lista = new ArrayList<>();
@@ -47,23 +47,21 @@ class BeneficioControllerTest {
         ResponseEntity<List<BeneficioEntity>> response = beneficioController.listAll();
 
         assertEquals(2, response.getBody().size());
-        assertEquals("Bolsa Família", response.getBody().get(0).getTitular());
-        assertEquals("Auxílio Gás", response.getBody().get(1).getTitular());
+        assertEquals("Maria Silva", response.getBody().get(0).getTitular());
+        assertEquals("João Santos", response.getBody().get(1).getTitular());
         verify(beneficioService, times(1)).listAll();
     }
 
     @Test
     void deveCriarBeneficio() {
-
         BeneficioDTO dto = new BeneficioDTO();
-        dto.setNome("Vale Alimentação");
-        dto.setValor(500.0);
+        dto.setNome("Maria Silva");
+        dto.setSaldo(3000.0);
         dto.setAtiva(true);
 
-
         BeneficioEntity novo = new BeneficioEntity();
-        novo.setTitular("Vale Alimentação");
-        novo.setValor(BigDecimal.valueOf(500));
+        novo.setTitular("Maria Silva");
+        novo.setSaldo(BigDecimal.valueOf(3000));
         novo.setAtiva(true);
 
         when(beneficioService.create(any(BeneficioDTO.class))).thenReturn(novo);
@@ -71,21 +69,21 @@ class BeneficioControllerTest {
         ResponseEntity<BeneficioEntity> response = beneficioController.create(dto);
 
         assertNotNull(response.getBody());
-        assertEquals("Vale Alimentação", response.getBody().getTitular());
-        assertEquals(BigDecimal.valueOf(500), response.getBody().getValor());
+        assertEquals("Maria Silva", response.getBody().getTitular());
+        assertEquals(BigDecimal.valueOf(3000), response.getBody().getSaldo());
         verify(beneficioService, times(1)).create(any(BeneficioDTO.class));
     }
 
     @Test
     void deveAtualizarBeneficio() {
         BeneficioDTO dto = new BeneficioDTO();
-        dto.setNome("Vale Transporte");
-        dto.setValor(200.0);
+        dto.setNome("João Santos");
+        dto.setSaldo(2000.0);
         dto.setAtiva(true);
 
         BeneficioEntity atualizado = new BeneficioEntity();
-        atualizado.setTitular("Vale Transporte");
-        atualizado.setValor(BigDecimal.valueOf(200));
+        atualizado.setTitular("João Santos");
+        atualizado.setSaldo(BigDecimal.valueOf(2000));
         atualizado.setAtiva(true);
 
         when(beneficioService.update(eq(1L), any(BeneficioDTO.class))).thenReturn(atualizado);
@@ -93,8 +91,8 @@ class BeneficioControllerTest {
         ResponseEntity<BeneficioEntity> response = beneficioController.update(1L, dto);
 
         assertNotNull(response.getBody());
-        assertEquals("Vale Transporte", response.getBody().getTitular());
-        assertEquals(BigDecimal.valueOf(200), response.getBody().getValor());
+        assertEquals("João Santos", response.getBody().getTitular());
+        assertEquals(BigDecimal.valueOf(2000), response.getBody().getSaldo());
         verify(beneficioService, times(1)).update(eq(1L), any(BeneficioDTO.class));
     }
 
@@ -104,7 +102,7 @@ class BeneficioControllerTest {
 
         ResponseEntity<Void> response = beneficioController.delete(1L);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(beneficioService, times(1)).delete(1L);
     }
 

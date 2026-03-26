@@ -1,16 +1,12 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
-import org.springframework.http.ResponseEntity; // Mantido
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collections; // Novo import para findAll()
-import java.util.List;
 import java.util.Objects;
 
-
 @Entity
-@Table(name = "BENEFICIO")
+@Table(name = "CONTA")
 public class BeneficioEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,29 +15,27 @@ public class BeneficioEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "TITULAR", nullable = false, length = 100)
     private String titular;
 
-    // Campo correto: BigDecimal
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal valor = BigDecimal.ZERO;
+    @Column(name = "SALDO", nullable = false, precision = 15, scale = 2)
+    private BigDecimal saldo = BigDecimal.ZERO;
 
-    @Column(nullable = false)
+    @Column(name = "ATIVA", nullable = false)
     private Boolean ativa = true;
 
+    @Version
+    @Column(name = "VERSION")
+    private Long version;
 
-    // Construtor Padrão (necessário pelo JPA)
     public BeneficioEntity() {
     }
 
-
-    // Construtor com argumentos
-    public BeneficioEntity(String titular, BigDecimal valor, Boolean ativa) {
+    public BeneficioEntity(String titular, BigDecimal saldo, Boolean ativa) {
         this.titular = titular;
-        this.valor = valor;
+        this.saldo = saldo;
         this.ativa = ativa;
     }
-
 
     public Long getId() {
         return id;
@@ -59,14 +53,12 @@ public class BeneficioEntity implements Serializable {
         this.titular = titular;
     }
 
-    // CORREÇÃO ESSENCIAL: Tipo de retorno deve ser BigDecimal
-    public BigDecimal getValor() {
-        return valor;
+    public BigDecimal getSaldo() {
+        return saldo;
     }
 
-    // CORREÇÃO ESSENCIAL: Tipo de parâmetro deve ser BigDecimal
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 
     public Boolean getAtiva() {
@@ -77,6 +69,13 @@ public class BeneficioEntity implements Serializable {
         this.ativa = ativa;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -96,43 +95,8 @@ public class BeneficioEntity implements Serializable {
         return "BeneficioEntity{" +
                 "id=" + id +
                 ", titular='" + titular + '\'' +
-                ", valor=" + valor +
+                ", saldo=" + saldo +
                 ", ativa=" + ativa +
                 '}';
-    }
-
-
-    public void setNome(String bolsaFamília) {
-        this.titular = bolsaFamília;
-    }
-
-
-    public String getNome() {
-        return this.titular;
-    }
-
-
-    public ResponseEntity<BeneficioEntity> create(BeneficioEntity novo) {
-        return ResponseEntity.ok(novo);
-    }
-
-
-    public void setSaldo(BigDecimal bigDecimal) {
-        this.valor = bigDecimal;
-    }
-
-
-    public static ResponseEntity<List<BeneficioEntity>> findAll() {
-        return ResponseEntity.ok(Collections.emptyList());
-    }
-
-
-    public void setDescricao(String ajudaMensal) {
-
-    }
-
-    public BigDecimal getSaldo() {
-
-        return this.valor;
     }
 }

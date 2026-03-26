@@ -22,7 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class BeneficioServiceTest {
@@ -36,17 +35,16 @@ class BeneficioServiceTest {
     @InjectMocks
     private BeneficioService beneficioService;
 
-
     @Test
     void deveCriarBeneficio() {
         BeneficioDTO dto = new BeneficioDTO();
-        dto.setNome("Bolsa Família");
-        dto.setValor(500.0);
+        dto.setNome("Maria Silva");
+        dto.setSaldo(3000.0);
         dto.setAtiva(true);
 
         BeneficioEntity entitySalvo = new BeneficioEntity();
         entitySalvo.setTitular(dto.getNome());
-        entitySalvo.setValor(BigDecimal.valueOf(dto.getValor()));
+        entitySalvo.setSaldo(BigDecimal.valueOf(dto.getSaldo()));
         entitySalvo.setAtiva(dto.getAtiva());
 
         when(beneficioRepository.save(any(BeneficioEntity.class))).thenReturn(entitySalvo);
@@ -54,8 +52,8 @@ class BeneficioServiceTest {
         BeneficioEntity resultado = beneficioService.create(dto);
 
         assertNotNull(resultado);
-        assertEquals("Bolsa Família", resultado.getTitular());
-        assertEquals(BigDecimal.valueOf(500.0), resultado.getValor());
+        assertEquals("Maria Silva", resultado.getTitular());
+        assertEquals(BigDecimal.valueOf(3000.0), resultado.getSaldo());
         assertTrue(resultado.getAtiva());
 
         verify(beneficioRepository, times(1)).save(any(BeneficioEntity.class));
@@ -78,13 +76,13 @@ class BeneficioServiceTest {
     @Test
     void deveAtualizarBeneficio() {
         BeneficioDTO dto = new BeneficioDTO();
-        dto.setNome("Auxílio Gás");
-        dto.setValor(300.0);
+        dto.setNome("João Santos");
+        dto.setSaldo(2000.0);
         dto.setAtiva(false);
 
         BeneficioEntity existente = new BeneficioEntity();
-        existente.setTitular("Bolsa Família");
-        existente.setValor(BigDecimal.valueOf(500.0));
+        existente.setTitular("Maria Silva");
+        existente.setSaldo(BigDecimal.valueOf(3000.0));
         existente.setAtiva(true);
 
         when(beneficioRepository.findById(1L)).thenReturn(Optional.of(existente));
@@ -92,8 +90,8 @@ class BeneficioServiceTest {
 
         BeneficioEntity resultado = beneficioService.update(1L, dto);
 
-        assertEquals("Auxílio Gás", resultado.getTitular());
-        assertEquals(BigDecimal.valueOf(300.0).setScale(1), resultado.getValor().setScale(1));
+        assertEquals("João Santos", resultado.getTitular());
+        assertEquals(BigDecimal.valueOf(2000.0).setScale(1), resultado.getSaldo().setScale(1));
         assertFalse(resultado.getAtiva());
 
         verify(beneficioRepository, times(1)).findById(1L);
@@ -128,12 +126,12 @@ class BeneficioServiceTest {
     void deveTransferirEntreBeneficios() {
         BeneficioEntity origem = new BeneficioEntity();
         origem.setId(1L);
-        origem.setValor(BigDecimal.valueOf(500.0));
+        origem.setSaldo(BigDecimal.valueOf(500.0));
         origem.setAtiva(true);
 
         BeneficioEntity destino = new BeneficioEntity();
         destino.setId(2L);
-        destino.setValor(BigDecimal.valueOf(200.0));
+        destino.setSaldo(BigDecimal.valueOf(200.0));
         destino.setAtiva(true);
 
         when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
@@ -143,8 +141,8 @@ class BeneficioServiceTest {
 
         beneficioService.transfer(1L, 2L, 100.0);
 
-        assertEquals(BigDecimal.valueOf(400.0).setScale(1), origem.getValor().setScale(1));
-        assertEquals(BigDecimal.valueOf(300.0).setScale(1), destino.getValor().setScale(1));
+        assertEquals(BigDecimal.valueOf(400.0).setScale(1), origem.getSaldo().setScale(1));
+        assertEquals(BigDecimal.valueOf(300.0).setScale(1), destino.getSaldo().setScale(1));
 
         verify(beneficioRepository, times(2)).save(any(BeneficioEntity.class));
         verify(transferenceRepository, times(1)).save(any(TransferenceEntity.class));
@@ -154,12 +152,12 @@ class BeneficioServiceTest {
     void deveLancarErroQuandoSaldoInsuficiente() {
         BeneficioEntity origem = new BeneficioEntity();
         origem.setId(1L);
-        origem.setValor(BigDecimal.valueOf(50.0));
+        origem.setSaldo(BigDecimal.valueOf(50.0));
         origem.setAtiva(true);
 
         BeneficioEntity destino = new BeneficioEntity();
         destino.setId(2L);
-        destino.setValor(BigDecimal.valueOf(200.0));
+        destino.setSaldo(BigDecimal.valueOf(200.0));
         destino.setAtiva(true);
 
         when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
@@ -177,12 +175,12 @@ class BeneficioServiceTest {
     void deveObterBeneficioPorId() {
         BeneficioEntity entity = new BeneficioEntity();
         entity.setId(1L);
-        entity.setTitular("Bolsa Família");
+        entity.setTitular("Maria Silva");
 
         when(beneficioRepository.findById(1L)).thenReturn(Optional.of(entity));
 
         BeneficioEntity resultado = beneficioService.get(1L);
-        assertEquals("Bolsa Família", resultado.getTitular());
+        assertEquals("Maria Silva", resultado.getTitular());
     }
 
     @Test

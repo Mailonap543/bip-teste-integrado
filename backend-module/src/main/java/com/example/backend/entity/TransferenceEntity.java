@@ -2,7 +2,8 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode; // Importa RoundingMode para melhor prática
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TRANSFERENCIA")
@@ -12,30 +13,42 @@ public class TransferenceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Campos de origem e destino
-    @Column(nullable = false)
+    @Column(name = "CONTA_ORIGEM_ID", nullable = false)
     private Long fromId;
 
-    @Column(nullable = false)
+    @Column(name = "CONTA_DESTINO_ID", nullable = false)
     private Long toId;
 
-    // Valor da transferência
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(name = "VALOR", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
-    // Construtor Padrão (necessário pelo JPA)
+    @Column(name = "DATA_TRANSFERENCIA")
+    private LocalDateTime dataTransferencia;
+
+    @PrePersist
+    public void prePersist() {
+        if (dataTransferencia == null) {
+            dataTransferencia = LocalDateTime.now();
+        }
+    }
+
     public TransferenceEntity() {
     }
 
-    // Construtor usado no Service
+    public TransferenceEntity(Long fromId, Long toId, BigDecimal amount) {
+        this.fromId = fromId;
+        this.toId = toId;
+        this.amount = amount.setScale(2, RoundingMode.HALF_UP);
+        this.dataTransferencia = LocalDateTime.now();
+    }
+
     public TransferenceEntity(Long fromId, Long toId, Double amount) {
         this.fromId = fromId;
         this.toId = toId;
-        // Usa RoundingMode.HALF_UP para arredondamento padrão
         this.amount = BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP);
+        this.dataTransferencia = LocalDateTime.now();
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -66,5 +79,13 @@ public class TransferenceEntity {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public LocalDateTime getDataTransferencia() {
+        return dataTransferencia;
+    }
+
+    public void setDataTransferencia(LocalDateTime dataTransferencia) {
+        this.dataTransferencia = dataTransferencia;
     }
 }

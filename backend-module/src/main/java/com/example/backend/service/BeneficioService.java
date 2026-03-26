@@ -25,32 +25,25 @@ public class BeneficioService {
         this.transferenceRepository = transferenceRepository;
     }
 
-
-
     public BeneficioEntity create(BeneficioDTO dto) {
         BeneficioEntity entity = new BeneficioEntity();
         entity.setTitular(dto.getNome());
 
-
-        BigDecimal valor = dto.getValor() != null
-                ? BigDecimal.valueOf(dto.getValor()).setScale(2, RoundingMode.HALF_UP)
+        BigDecimal saldo = dto.getSaldo() != null
+                ? BigDecimal.valueOf(dto.getSaldo()).setScale(2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
-        entity.setValor(valor);
-
+        entity.setSaldo(saldo);
 
         entity.setAtiva(dto.getAtiva() != null ? dto.getAtiva() : true);
 
         return beneficioRepository.save(entity);
     }
 
-
     public List<BeneficioEntity> listAll() {
         return beneficioRepository.findAll();
     }
 
-    /**
-     * Atualiza um benefício existente
-     */
+    @Transactional
     public BeneficioEntity update(Long id, BeneficioDTO dto) {
         BeneficioEntity entity = findByIdOrThrow(id);
 
@@ -58,9 +51,9 @@ public class BeneficioService {
             entity.setTitular(dto.getNome());
         }
 
-        if (dto.getValor() != null) {
-            BigDecimal valor = BigDecimal.valueOf(dto.getValor()).setScale(2, RoundingMode.HALF_UP);
-            entity.setValor(valor);
+        if (dto.getSaldo() != null) {
+            BigDecimal saldo = BigDecimal.valueOf(dto.getSaldo()).setScale(2, RoundingMode.HALF_UP);
+            entity.setSaldo(saldo);
         }
 
         if (dto.getAtiva() != null) {
@@ -70,13 +63,11 @@ public class BeneficioService {
         return beneficioRepository.save(entity);
     }
 
-
+    @Transactional
     public void delete(Long id) {
-        // Encontra o benefício ou lança exceção (garantindo que ele exista)
         BeneficioEntity entity = findByIdOrThrow(id);
         beneficioRepository.deleteById(entity.getId());
     }
-
 
     @Transactional
     public void transfer(Long fromId, Long toId, Double amount) {
@@ -95,33 +86,27 @@ public class BeneficioService {
 
         BigDecimal valor = BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP);
 
-        // Comparação correta de BigDecimal
-        if (origem.getValor().compareTo(valor) < 0) {
+        if (origem.getSaldo().compareTo(valor) < 0) {
             throw new BusinessException("Saldo insuficiente no benefício de origem.");
         }
 
-        // Realiza o débito e o crédito, garantindo o arredondamento
-        origem.setValor(round(origem.getValor().subtract(valor)));
-        destino.setValor(round(destino.getValor().add(valor)));
+        origem.setSaldo(round(origem.getSaldo().subtract(valor)));
+        destino.setSaldo(round(destino.getSaldo().add(valor)));
 
         beneficioRepository.save(origem);
         beneficioRepository.save(destino);
 
-
-        TransferenceEntity transferencia = new TransferenceEntity(origem.getId(), destino.getId(), amount);
+        TransferenceEntity transferencia = new TransferenceEntity(origem.getId(), destino.getId(), valor);
         transferenceRepository.save(transferencia);
     }
-
 
     private BigDecimal round(BigDecimal val) {
         return val.setScale(2, RoundingMode.HALF_UP);
     }
 
-
     public BeneficioEntity get(Long id) {
         return findByIdOrThrow(id);
     }
-
 
     private BeneficioEntity findByIdOrThrow(Long id) {
         return beneficioRepository.findById(id)

@@ -1,13 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-// ✅ CORREÇÃO: Altera o nome do componente e o caminho de importação.
-import { AppComponent } from './app.component'; 
-import { RouterTestingModule } from '@angular/router/testing'; 
+import { AppComponent } from './app.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // ✅ Componente Standalone no imports
-      imports: [AppComponent, RouterTestingModule], 
+      imports: [AppComponent, RouterTestingModule],
     }).compileComponents();
   });
 
@@ -17,5 +15,11 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  // Você pode adicionar mais testes aqui, se necessário
+  it('should render header with navigation links', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.app-header')).toBeTruthy();
+    expect(compiled.querySelector('.nav-links')).toBeTruthy();
+  });
 });

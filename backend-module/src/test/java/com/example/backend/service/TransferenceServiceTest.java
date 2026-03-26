@@ -36,13 +36,13 @@ class TransferenceServiceTest {
     void deveTransferirSaldoComSucesso() {
         BeneficioEntity origem = new BeneficioEntity();
         origem.setId(1L);
-        origem.setNome("Benefício Origem");
+        origem.setTitular("Maria Silva");
         origem.setSaldo(BigDecimal.valueOf(1000));
         origem.setAtiva(true);
 
         BeneficioEntity destino = new BeneficioEntity();
         destino.setId(2L);
-        destino.setNome("Benefício Destino");
+        destino.setTitular("João Santos");
         destino.setSaldo(BigDecimal.valueOf(500));
         destino.setAtiva(true);
 
@@ -62,13 +62,13 @@ class TransferenceServiceTest {
     void deveLancarErroSaldoInsuficiente() {
         BeneficioEntity origem = new BeneficioEntity();
         origem.setId(1L);
-        origem.setNome("Origem");
+        origem.setTitular("Maria Silva");
         origem.setSaldo(BigDecimal.valueOf(100));
         origem.setAtiva(true);
 
         BeneficioEntity destino = new BeneficioEntity();
         destino.setId(2L);
-        destino.setNome("Destino");
+        destino.setTitular("João Santos");
         destino.setSaldo(BigDecimal.valueOf(200));
         destino.setAtiva(true);
 

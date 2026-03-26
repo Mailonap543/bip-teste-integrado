@@ -1,8 +1,6 @@
 export interface Beneficio {
   id?: number;
-  nome: string;
-  descricao: string;
+  titular: string;
   saldo: number;
   ativa: boolean;
-  valor: number;
 }

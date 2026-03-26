@@ -25,11 +25,9 @@ export class BeneficioFormComponent implements OnChanges {
     if (changes['beneficio'] && this.form) {
       this.form.patchValue(this.beneficio ?? {
         id: undefined,
-        nome: '',
-        descricao: '',
+        titular: '',
         saldo: 0,
-        ativa: true,
-        valor: 0
+        ativa: true
       });
     }
   }
@@ -37,10 +35,8 @@ export class BeneficioFormComponent implements OnChanges {
   criarFormulario(): void {
     this.form = this.fb.group({
       id: [undefined],
-      nome: ['', [Validators.required, Validators.minLength(3)]],
-      descricao: ['', Validators.required],
-      saldo: [0, Validators.min(0)],
-      valor: [0, Validators.required],
+      titular: ['', [Validators.required, Validators.minLength(3)]],
+      saldo: [0, [Validators.required, Validators.min(0)]],
       ativa: [true]
     });
   }
@@ -55,5 +51,9 @@ export class BeneficioFormComponent implements OnChanges {
 
   onCancel(): void {
     this.cancelar.emit();
+  }
+
+  get isEdicao(): boolean {
+    return !!this.form?.value?.id;
   }
 }

@@ -1,70 +1,163 @@
-.beneficio-container {
-  padding: 30px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.list-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 h2 {
-  color: #007bff;
-  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.actions-bar {
   margin-bottom: 20px;
 }
 
-.beneficio-table {
+.table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.beneficio-table th,
-.beneficio-table td {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
+.table th,
+.table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ecf0f1;
+  text-align: left;
+}
+
+.table th {
+  background-color: #3498db;
+  color: white;
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.saldo {
+  font-weight: 600;
+  color: #27ae60;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge-ativa {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-inativa {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.loading {
   text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
 }
 
-.beneficio-table th {
-  background-color: #007bff;
-  color: white;
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ecf0f1;
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 10px;
+  vertical-align: middle;
 }
 
-.btn-novo {
-  background-color: #28a745;
-  color: white;
-  padding: 8px 14px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #95a5a6;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.alert {
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.alert-sucesso {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-erro {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.btn {
+  padding: 8px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
   transition: background 0.2s;
 }
 
-.btn-novo:hover {
-  background-color: #218838;
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.85rem;
 }
 
 .btn-editar {
-  background-color: #ffc107;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  margin-right: 5px;
-}
-
-.btn-excluir {
-  background-color: #dc3545;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
+  background-color: #f39c12;
   color: white;
 }
 
 .btn-editar:hover {
-  background-color: #e0a800;
+  background-color: #e67e22;
+}
+
+.btn-excluir {
+  background-color: #e74c3c;
+  color: white;
 }
 
 .btn-excluir:hover {
-  background-color: #c82333;
+  background-color: #c0392b;
 }

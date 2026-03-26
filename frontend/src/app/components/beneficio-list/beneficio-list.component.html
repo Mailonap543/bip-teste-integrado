@@ -1,7 +1,17 @@
 <div class="list-container">
-  <button class="btn-novo" (click)="novoBeneficio()">Novo Benefício</button>
+  <h2>Gerenciar Benefícios</h2>
 
-  <div *ngIf="beneficioSelecionado">
+  <div *ngIf="mensagem" class="alert" [ngClass]="{'alert-sucesso': tipoMensagem === 'sucesso', 'alert-erro': tipoMensagem === 'erro'}">
+    {{ mensagem }}
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn btn-primary" (click)="novoBeneficio()" *ngIf="!beneficioSelecionado">
+      + Novo Benefício
+    </button>
+  </div>
+
+  <div *ngIf="beneficioSelecionado" class="form-section">
     <app-beneficio-form
       [beneficio]="beneficioSelecionado"
       (salvarBeneficio)="salvarBeneficioEvent($event)"
@@ -9,25 +19,43 @@
     </app-beneficio-form>
   </div>
 
-  <table *ngIf="!beneficioSelecionado">
+  <div *ngIf="carregando" class="loading">
+    <span class="spinner"></span> Carregando...
+  </div>
+
+  <table *ngIf="!beneficioSelecionado && !carregando" class="table">
     <thead>
       <tr>
-        <th>ID</th><th>Nome</th><th>Descrição</th><th>Saldo</th><th>Ativo</th><th>Valor</th><th>Ações</th>
+        <th>ID</th>
+        <th>Titular</th>
+        <th>Saldo</th>
+        <th>Ativa</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let b of beneficios">
         <td>{{ b.id }}</td>
-        <td>{{ b.nome }}</td>
-        <td>{{ b.descricao }}</td>
-        <td>{{ b.saldo }}</td>
-        <td>{{ b.ativa ? 'Sim' : 'Não' }}</td>
-        <td>{{ b.valor }}</td>
+        <td>{{ b.titular }}</td>
+        <td class="saldo">{{ b.saldo | currency:'BRL':'symbol':'1.2-2' }}</td>
         <td>
-          <button (click)="editar(b)">Editar</button>
-          <button (click)="excluir(b.id)">Excluir</button>
+          <span class="badge" [ngClass]="{'badge-ativa': b.ativa, 'badge-inativa': !b.ativa}">
+            {{ b.ativa ? 'Ativa' : 'Inativa' }}
+          </span>
+        </td>
+        <td class="actions">
+          <button class="btn btn-sm btn-editar" (click)="editar(b)" title="Editar">
+            Editar
+          </button>
+          <button class="btn btn-sm btn-excluir" (click)="excluir(b.id)" title="Excluir">
+            Excluir
+          </button>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <div *ngIf="!carregando && beneficios.length === 0 && !beneficioSelecionado" class="empty-state">
+    <p>Nenhum benefício cadastrado.</p>
+  </div>
 </div>

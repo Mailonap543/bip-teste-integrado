@@ -1,5 +1,39 @@
-<div style="text-align: center; padding: 40px;">
+<div class="about-container">
   <h1>{{ title }}</h1>
-  <p>Esta é a página sobre o sistema de benefícios.</p>
-  <a routerLink="/">Voltar para a Home</a>
+  <p class="version">Versão {{ version }}</p>
+
+  <div class="section">
+    <h2>Sobre o Projeto</h2>
+    <p>
+      Este sistema foi desenvolvido como parte do Desafio Fullstack Integrado.
+      Ele demonstra a implementação de uma aplicação completa com arquitetura em camadas,
+      incluindo banco de dados relacional, serviços EJB, backend REST e frontend Angular.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Tecnologias Utilizadas</h2>
+    <div class="tech-grid">
+      <div class="tech-card" *ngFor="let tech of techStack">
+        <strong>{{ tech.name }}</strong>
+        <span>{{ tech.desc }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Funcionalidades</h2>
+    <ul>
+      <li>CRUD completo de benefícios</li>
+      <li>Transferência de valores entre benefícios</li>
+      <li>Validação de saldo e status</li>
+      <li>Locking pessimístico para consistência</li>
+      <li>Documentação Swagger/OpenAPI</li>
+      <li>Testes unitários e de integração</li>
+    </ul>
+  </div>
+
+  <div class="back-link">
+    <a routerLink="/">Voltar para a Home</a>
+  </div>
 </div>

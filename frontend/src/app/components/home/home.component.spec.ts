@@ -1,17 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home.component';
-import { BeneficioListComponent } from '../beneficio-list/beneficio-list.component';
-import { BeneficioService } from '../../service/beneficio.service';
-import { of } from 'rxjs';
-
-// Mock do serviço de Benefício
-class MockBeneficioService {
-  getBeneficios() {
-    return of([]);
-  }
-}
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -19,15 +8,7 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule, // ✅ Fornece ActivatedRoute e routerLink
-        HttpClientTestingModule,
-        HomeComponent,
-        BeneficioListComponent
-      ],
-      providers: [
-        { provide: BeneficioService, useClass: MockBeneficioService }
-      ]
+      imports: [HomeComponent, RouterModule.forRoot([])]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);

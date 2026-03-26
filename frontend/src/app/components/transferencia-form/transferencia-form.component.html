@@ -1,0 +1,51 @@
+<div class="transferencia-container">
+  <h2>Transferir Valor</h2>
+
+  <div *ngIf="mensagem" class="alert" [ngClass]="{'alert-sucesso': tipoMensagem === 'sucesso', 'alert-erro': tipoMensagem === 'erro'}">
+    {{ mensagem }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="fromId">Benefício de Origem</label>
+      <select id="fromId" formControlName="fromId">
+        <option [ngValue]="null" disabled>Selecione o benefício de origem</option>
+        <option *ngFor="let b of beneficios" [ngValue]="b.id">
+          {{ b.titular }} (Saldo: {{ b.saldo | currency:'BRL':'symbol':'1.2-2' }})
+        </option>
+      </select>
+      <div class="error" *ngIf="form.get('fromId')?.touched && form.get('fromId')?.invalid">
+        Benefício de origem é obrigatório.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="toId">Benefício de Destino</label>
+      <select id="toId" formControlName="toId">
+        <option [ngValue]="null" disabled>Selecione o benefício de destino</option>
+        <option *ngFor="let b of beneficios" [ngValue]="b.id">
+          {{ b.titular }} (Saldo: {{ b.saldo | currency:'BRL':'symbol':'1.2-2' }})
+        </option>
+      </select>
+      <div class="error" *ngIf="form.get('toId')?.touched && form.get('toId')?.invalid">
+        Benefício de destino é obrigatório.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Valor da Transferência</label>
+      <input id="amount" type="number" formControlName="amount" placeholder="0.00" step="0.01" min="0.01" />
+      <div class="error" *ngIf="form.get('amount')?.touched && form.get('amount')?.invalid">
+        <span *ngIf="form.get('amount')?.errors?.['required']">Valor é obrigatório.</span>
+        <span *ngIf="form.get('amount')?.errors?.['min']">Valor deve ser maior que zero.</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || carregando">
+        <span *ngIf="carregando" class="spinner"></span>
+        {{ carregando ? 'Transferindo...' : 'Transferir' }}
+      </button>
+    </div>
+  </form>
+</div>

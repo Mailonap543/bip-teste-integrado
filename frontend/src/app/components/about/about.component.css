@@ -1,6 +1,76 @@
-h1 {
-  color: darkblue;
+.about-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
 }
-p {
-    font-size: 16px;
+
+h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.version {
+  color: #7f8c8d;
+  margin-bottom: 30px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section h2 {
+  color: #34495e;
+  margin-bottom: 15px;
+}
+
+.section p {
+  color: #555;
+  line-height: 1.7;
+}
+
+.section ul {
+  color: #555;
+  line-height: 2;
+  padding-left: 20px;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.tech-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tech-card strong {
+  color: #2c3e50;
+}
+
+.tech-card span {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.back-link {
+  margin-top: 30px;
+}
+
+.back-link a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
 }

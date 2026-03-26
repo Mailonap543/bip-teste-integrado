@@ -1,34 +1,39 @@
 <div class="form-container">
-  <h2>{{ form.value.id ? 'Editar Benefício' : 'Novo Benefício' }}</h2>
+  <h2>{{ isEdicao ? 'Editar Benefício' : 'Novo Benefício' }}</h2>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="nome">Nome</label>
-      <input id="nome" formControlName="nome" />
+    <div class="form-group">
+      <label for="titular">Titular</label>
+      <input id="titular" type="text" formControlName="titular" placeholder="Nome do titular" />
+      <div class="error" *ngIf="form.get('titular')?.touched && form.get('titular')?.invalid">
+        <span *ngIf="form.get('titular')?.errors?.['required']">Titular é obrigatório.</span>
+        <span *ngIf="form.get('titular')?.errors?.['minlength']">Mínimo de 3 caracteres.</span>
+      </div>
     </div>
 
-    <div>
-      <label for="descricao">Descrição</label>
-      <input id="descricao" formControlName="descricao" />
-    </div>
-
-    <div>
+    <div class="form-group">
       <label for="saldo">Saldo</label>
-      <input id="saldo" type="number" formControlName="saldo" />
+      <input id="saldo" type="number" formControlName="saldo" placeholder="0.00" step="0.01" />
+      <div class="error" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.invalid">
+        <span *ngIf="form.get('saldo')?.errors?.['required']">Saldo é obrigatório.</span>
+        <span *ngIf="form.get('saldo')?.errors?.['min']">Saldo não pode ser negativo.</span>
+      </div>
     </div>
 
-    <div>
-      <label for="valor">Valor</label>
-      <input id="valor" type="number" formControlName="valor" />
+    <div class="form-group checkbox-group">
+      <label>
+        <input type="checkbox" formControlName="ativa" />
+        Benefício Ativo
+      </label>
     </div>
 
-    <div>
-      <label><input type="checkbox" formControlName="ativa" /> Ativa</label>
-    </div>
-
-    <div>
-      <button type="submit">Salvar</button>
-      <button type="button" (click)="onCancel()">Cancelar</button>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        {{ isEdicao ? 'Atualizar' : 'Criar' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancelar
+      </button>
     </div>
   </form>
 </div>
