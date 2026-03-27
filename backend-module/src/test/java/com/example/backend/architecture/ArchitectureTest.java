@@ -41,7 +41,6 @@ class ArchitectureTest {
     @Test
     void layeredArchitecture() {
         layeredArchitecture()
-                .consideringAllDependencies()
                 .layer("Controller").definedBy("..controller..")
                 .layer("Service").definedBy("..service..")
                 .layer("Repository").definedBy("..repository..")

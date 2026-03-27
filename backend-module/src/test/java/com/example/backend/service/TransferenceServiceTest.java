@@ -18,9 +18,6 @@ import static org.mockito.Mockito.*;
 
 class TransferenceServiceTest {
 
-    private static final String NOME_MARIA = NOME_MARIA;
-    private static final String NOME_JOAO = NOME_JOAO;
-
     @Mock
     private BeneficioRepository beneficioRepository;
 
@@ -39,13 +36,13 @@ class TransferenceServiceTest {
     void deveTransferirSaldoComSucesso() {
         BeneficioEntity origem = new BeneficioEntity();
         origem.setId(1L);
-        origem.setTitular(NOME_MARIA);
+        origem.setTitular("Maria Silva");
         origem.setSaldo(BigDecimal.valueOf(1000));
         origem.setAtiva(true);
 
         BeneficioEntity destino = new BeneficioEntity();
         destino.setId(2L);
-        destino.setTitular(NOME_JOAO);
+        destino.setTitular("Joao Santos");
         destino.setSaldo(BigDecimal.valueOf(500));
         destino.setAtiva(true);
 
@@ -65,13 +62,13 @@ class TransferenceServiceTest {
     void deveLancarErroSaldoInsuficiente() {
         BeneficioEntity origem = new BeneficioEntity();
         origem.setId(1L);
-        origem.setTitular(NOME_MARIA);
+        origem.setTitular("Maria Silva");
         origem.setSaldo(BigDecimal.valueOf(100));
         origem.setAtiva(true);
 
         BeneficioEntity destino = new BeneficioEntity();
         destino.setId(2L);
-        destino.setTitular(NOME_JOAO);
+        destino.setTitular("Joao Santos");
         destino.setSaldo(BigDecimal.valueOf(200));
         destino.setAtiva(true);
 
