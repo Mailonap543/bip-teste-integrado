@@ -1,6 +1,7 @@
 package com.example.ejb.entity;
 
 import jakarta.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
