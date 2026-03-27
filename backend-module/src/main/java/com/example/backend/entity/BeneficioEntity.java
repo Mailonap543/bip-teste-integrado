@@ -9,6 +9,7 @@ import java.util.Objects;
 @Table(name = "CONTA")
 public class BeneficioEntity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

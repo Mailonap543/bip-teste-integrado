@@ -1,27 +1,31 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
-
+# Build stage
+FROM maven:3.9-eclipse-temurin-17-alpine AS build
 WORKDIR /app
-
 COPY pom.xml .
-RUN apk add --no-cache maven && mvn dependency:go-offline -B
+COPY backend-module/pom.xml backend-module/
+RUN mvn dependency:go-offline -B
+COPY backend-module/src backend-module/src
+RUN mvn clean package -DskipTests -B -q
 
-COPY src ./src
-RUN mvn clean package -DskipTests -B
-
+# Runtime stage
 FROM eclipse-temurin:17-jre-alpine
-
-RUN addgroup -S spring && adduser -S spring -G spring
-
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar app.jar
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-RUN chown spring:spring app.jar
-USER spring
+COPY --from=build /app/backend-module/target/*.jar app.jar
+
+RUN chown appuser:appgroup app.jar
+USER appuser
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
 
-ENTRYPOINT ["java", "-jar", "-Xmx512m", "-Xms256m", "app.jar"]
+ENTRYPOINT ["java", "-jar", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-Dspring.profiles.active=prod", \
+  "app.jar"]

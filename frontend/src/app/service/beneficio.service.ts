@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Beneficio } from '../models/beneficio.model';
-import { ApiResponse } from '../models/api.model';
+import { ApiResponse, PagedResponse } from '../models/api.model';
 import { Observable, map } from 'rxjs';
 
 @Injectable({
@@ -15,6 +15,16 @@ export class BeneficioService {
   getBeneficios(): Observable<Beneficio[]> {
     return this.http.get<ApiResponse<Beneficio[]>>(this.baseUrl)
       .pipe(map(response => response.data ?? []));
+  }
+
+  getBeneficiosPaged(page: number = 0, size: number = 20, sortBy: string = 'id', direction: string = 'asc'): Observable<PagedResponse<Beneficio>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sortBy', sortBy)
+      .set('direction', direction);
+    return this.http.get<ApiResponse<PagedResponse<Beneficio>>>(`${this.baseUrl}/paged`, { params })
+      .pipe(map(response => response.data));
   }
 
   getById(id: number): Observable<Beneficio> {

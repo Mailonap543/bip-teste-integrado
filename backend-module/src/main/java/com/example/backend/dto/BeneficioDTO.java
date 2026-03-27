@@ -1,23 +1,32 @@
 package com.example.backend.dto;
 
+import com.example.backend.validation.OnCreate;
+import com.example.backend.validation.OnUpdate;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 
-@Schema(description = "DTO para operações com Benefício")
+@Schema(description = "DTO para operacoes com Beneficio")
 public class BeneficioDTO {
 
-    @Schema(description = "ID do benefício", example = "1")
+    @Schema(description = "ID do beneficio", example = "1")
+    @NotNull(message = "{beneficio.id.required}", groups = OnUpdate.class)
     private Long id;
 
     @Schema(description = "Nome do titular", example = "Maria Silva", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "{beneficio.nome.notblank}", groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 2, max = 100, message = "{beneficio.nome.size}", groups = {OnCreate.class, OnUpdate.class})
     private String nome;
 
-    @Schema(description = "Descrição do benefício", example = "Vale Alimentação")
+    @Schema(description = "Descricao do beneficio", example = "Vale Alimentacao")
+    @Size(max = 500, message = "{beneficio.descricao.size}", groups = {OnCreate.class, OnUpdate.class})
     private String descricao;
 
-    @Schema(description = "Saldo disponível", example = "3000.00")
+    @Schema(description = "Saldo disponivel", example = "3000.00")
+    @NotNull(message = "{beneficio.saldo.required}", groups = OnCreate.class)
+    @DecimalMin(value = "0.0", message = "{beneficio.saldo.min}", groups = {OnCreate.class, OnUpdate.class})
     private Double saldo;
 
-    @Schema(description = "Status ativo do benefício", example = "true")
+    @Schema(description = "Status ativo do beneficio", example = "true")
     private Boolean ativa;
 
     public Long getId() { return id; }

@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "BIP Benefits",
+    "welcome": "Welcome to BIP Benefits",
+    "description": "Manage your benefits and make transfers securely"
+  },
+  "nav": {
+    "home": "Home",
+    "beneficios": "Benefits",
+    "transferencias": "Transfers",
+    "about": "About",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "beneficios": {
+    "title": "Benefits",
+    "new": "New Benefit",
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export CSV",
+    "search": "Search by holder...",
+    "filter_all": "All",
+    "filter_active": "Active",
+    "filter_inactive": "Inactive",
+    "active": "Active",
+    "inactive": "Inactive",
+    "balance": "Available Balance",
+    "no_results": "No benefits found",
+    "confirm_delete": "Do you want to delete?",
+    "created": "Benefit created!",
+    "updated": "Benefit updated!",
+    "deleted": "Benefit deleted!"
+  },
+  "transferencias": {
+    "title": "Transfer Amount",
+    "origin": "Origin Benefit",
+    "destination": "Destination Benefit",
+    "amount": "Transfer Amount",
+    "transfer": "Transfer",
+    "transferring": "Transferring...",
+    "success": "Transfer completed!"
+  },
+  "auth": {
+    "welcome_back": "Welcome back",
+    "username": "Username",
+    "password": "Password",
+    "remember": "Stay logged in",
+    "login": "Login",
+    "logging_in": "Logging in...",
+    "no_account": "Don't have an account?",
+    "create_account": "Create account",
+    "login_success": "Login successful!",
+    "account_created": "Account created! Please login."
+  },
+  "dashboard": {
+    "total_beneficios": "Total Benefits",
+    "total_balance": "Total Balance",
+    "total_transfers": "Transfers",
+    "average_balance": "Average Balance",
+    "recent_beneficios": "Recent Benefits",
+    "quick_actions": "Quick Actions",
+    "new_beneficio": "New Benefit",
+    "new_transfer": "New Transfer"
+  },
+  "common": {
+    "loading": "Loading...",
+    "page": "Page",
+    "of": "of",
+    "items": "items",
+    "undo": "Undo",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close"
+  }
+}

@@ -7,8 +7,7 @@ import com.example.backend.service.BeneficioService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -24,7 +23,7 @@ class BeneficioControllerTest {
     @Autowired
     private BeneficioController beneficioController;
 
-    @MockitoBean
+    @MockBean
     private BeneficioService beneficioService;
 
     @Test
@@ -71,12 +70,12 @@ class BeneficioControllerTest {
     @Test
     void deveAtualizarBeneficio() {
         BeneficioDTO dto = new BeneficioDTO();
-        dto.setNome("João Santos");
+        dto.setNome("Joao Santos");
         dto.setSaldo(2000.0);
         dto.setAtiva(true);
 
         BeneficioEntity atualizado = new BeneficioEntity();
-        atualizado.setTitular("João Santos");
+        atualizado.setTitular("Joao Santos");
         atualizado.setSaldo(BigDecimal.valueOf(2000));
         atualizado.setAtiva(true);
 
@@ -85,7 +84,7 @@ class BeneficioControllerTest {
         ResponseEntity<ApiResponseDTO<BeneficioEntity>> response = beneficioController.update(1L, dto);
 
         assertTrue(response.getBody().isSuccess());
-        assertEquals("João Santos", response.getBody().getData().getTitular());
+        assertEquals("Joao Santos", response.getBody().getData().getTitular());
         verify(beneficioService, times(1)).update(eq(1L), any(BeneficioDTO.class));
     }
 

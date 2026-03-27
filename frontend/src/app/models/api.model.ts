@@ -4,6 +4,16 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface PagedResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -15,4 +25,8 @@ export interface AuthResponse {
 export interface LoginRequest {
   username: string;
   password: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
 }

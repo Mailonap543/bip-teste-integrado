@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "BIP Beneficios",
+    "welcome": "Bem-vindo ao BIP Beneficios",
+    "description": "Gerencie seus beneficios e realize transferencias com seguranca"
+  },
+  "nav": {
+    "home": "Inicio",
+    "beneficios": "Beneficios",
+    "transferencias": "Transferencias",
+    "about": "Sobre",
+    "login": "Entrar",
+    "logout": "Sair"
+  },
+  "beneficios": {
+    "title": "Beneficios",
+    "new": "Novo Beneficio",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "export": "Exportar CSV",
+    "search": "Buscar por titular...",
+    "filter_all": "Todos",
+    "filter_active": "Ativos",
+    "filter_inactive": "Inativos",
+    "active": "Ativa",
+    "inactive": "Inativa",
+    "balance": "Saldo Disponivel",
+    "no_results": "Nenhum beneficio encontrado",
+    "confirm_delete": "Deseja excluir?",
+    "created": "Beneficio criado!",
+    "updated": "Beneficio atualizado!",
+    "deleted": "Beneficio excluido!"
+  },
+  "transferencias": {
+    "title": "Transferir Valor",
+    "origin": "Beneficio de Origem",
+    "destination": "Beneficio de Destino",
+    "amount": "Valor da Transferencia",
+    "transfer": "Transferir",
+    "transferring": "Transferindo...",
+    "success": "Transferencia realizada!"
+  },
+  "auth": {
+    "welcome_back": "Bem-vindo de volta",
+    "username": "Usuario",
+    "password": "Senha",
+    "remember": "Manter conectado",
+    "login": "Entrar",
+    "logging_in": "Entrando...",
+    "no_account": "Nao tem conta?",
+    "create_account": "Criar conta",
+    "login_success": "Login realizado!",
+    "account_created": "Conta criada! Faca login."
+  },
+  "dashboard": {
+    "total_beneficios": "Total Beneficios",
+    "total_balance": "Saldo Total",
+    "total_transfers": "Transferencias",
+    "average_balance": "Media Saldo",
+    "recent_beneficios": "Beneficios Recentes",
+    "quick_actions": "Acoes Rapidas",
+    "new_beneficio": "Novo Beneficio",
+    "new_transfer": "Nova Transferencia"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "page": "Pagina",
+    "of": "de",
+    "items": "itens",
+    "undo": "Desfazer",
+    "success": "Sucesso",
+    "error": "Erro",
+    "warning": "Aviso",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "close": "Fechar"
+  }
+}

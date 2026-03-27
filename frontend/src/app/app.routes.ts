@@ -1,16 +1,28 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home.component';
-import { BeneficioListComponent } from './components/beneficio-list/beneficio-list.component';
-import { TransferenciaFormComponent } from './components/transferencia-form/transferencia-form.component';
-import { AboutComponent } from './components/about/about.component';
-import { LoginComponent } from './components/login/login.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'beneficios', component: BeneficioListComponent, canActivate: [authGuard] },
-  { path: 'transferencias', component: TransferenciaFormComponent, canActivate: [authGuard] },
-  { path: 'about', component: AboutComponent },
+  {
+    path: '',
+    loadComponent: () => import('./components/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'beneficios',
+    loadComponent: () => import('./components/beneficio-list/beneficio-list.component').then(m => m.BeneficioListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'transferencias',
+    loadComponent: () => import('./components/transferencia-form/transferencia-form.component').then(m => m.TransferenciaFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'about',
+    loadComponent: () => import('./components/about/about.component').then(m => m.AboutComponent)
+  },
   { path: '**', redirectTo: '' }
 ];

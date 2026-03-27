@@ -2,28 +2,31 @@ package com.example.backend.service;
 
 import com.example.backend.dto.BeneficioDTO;
 import com.example.backend.entity.BeneficioEntity;
-import com.example.backend.entity.TransferenceEntity;
 import com.example.backend.exception.BusinessException;
+import com.example.backend.mapper.BeneficioMapper;
 import com.example.backend.repository.BeneficioRepository;
 import com.example.backend.repository.TransferenceRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class BeneficioServiceTest {
 
     @Mock
@@ -32,162 +35,242 @@ class BeneficioServiceTest {
     @Mock
     private TransferenceRepository transferenceRepository;
 
+    @Mock
+    private BeneficioMapper beneficioMapper;
+
     @InjectMocks
     private BeneficioService beneficioService;
 
-    @Test
-    void deveCriarBeneficio() {
-        BeneficioDTO dto = new BeneficioDTO();
+    private BeneficioEntity entity;
+    private BeneficioDTO dto;
+
+    @BeforeEach
+    void setUp() {
+        entity = new BeneficioEntity();
+        entity.setId(1L);
+        entity.setTitular("Maria Silva");
+        entity.setSaldo(new BigDecimal("3000.00"));
+        entity.setAtiva(true);
+
+        dto = new BeneficioDTO();
         dto.setNome("Maria Silva");
         dto.setSaldo(3000.0);
         dto.setAtiva(true);
-
-        BeneficioEntity entitySalvo = new BeneficioEntity();
-        entitySalvo.setTitular(dto.getNome());
-        entitySalvo.setSaldo(BigDecimal.valueOf(dto.getSaldo()));
-        entitySalvo.setAtiva(dto.getAtiva());
-
-        when(beneficioRepository.save(any(BeneficioEntity.class))).thenReturn(entitySalvo);
-
-        BeneficioEntity resultado = beneficioService.create(dto);
-
-        assertNotNull(resultado);
-        assertEquals("Maria Silva", resultado.getTitular());
-        assertEquals(BigDecimal.valueOf(3000.0), resultado.getSaldo());
-        assertTrue(resultado.getAtiva());
-
-        verify(beneficioRepository, times(1)).save(any(BeneficioEntity.class));
     }
 
-    @Test
-    void deveListarTodosBeneficios() {
-        List<BeneficioEntity> lista = new ArrayList<>();
-        lista.add(new BeneficioEntity());
-        lista.add(new BeneficioEntity());
+    @Nested
+    @DisplayName("Create Tests")
+    class CreateTests {
 
-        when(beneficioRepository.findAll()).thenReturn(lista);
+        @Test
+        @DisplayName("Should create beneficio successfully")
+        void shouldCreateBeneficio() {
+            when(beneficioMapper.toEntity(dto)).thenReturn(entity);
+            when(beneficioRepository.save(any(BeneficioEntity.class))).thenReturn(entity);
 
-        List<BeneficioEntity> resultado = beneficioService.listAll();
+            BeneficioEntity result = beneficioService.create(dto);
 
-        assertEquals(2, resultado.size());
-        verify(beneficioRepository, times(1)).findAll();
+            assertNotNull(result);
+            assertEquals("Maria Silva", result.getTitular());
+            verify(beneficioRepository).save(any(BeneficioEntity.class));
+        }
+
+        @Test
+        @DisplayName("Should set default saldo to zero when null")
+        void shouldSetDefaultSaldoWhenNull() {
+            dto.setSaldo(null);
+            BeneficioEntity entityWithZero = new BeneficioEntity();
+            entityWithZero.setSaldo(BigDecimal.ZERO);
+            when(beneficioMapper.toEntity(dto)).thenReturn(entityWithZero);
+            when(beneficioRepository.save(any())).thenReturn(entityWithZero);
+
+            BeneficioEntity result = beneficioService.create(dto);
+
+            assertEquals(BigDecimal.ZERO, result.getSaldo());
+        }
     }
 
-    @Test
-    void deveAtualizarBeneficio() {
-        BeneficioDTO dto = new BeneficioDTO();
-        dto.setNome("João Santos");
-        dto.setSaldo(2000.0);
-        dto.setAtiva(false);
+    @Nested
+    @DisplayName("List Tests")
+    class ListTests {
 
-        BeneficioEntity existente = new BeneficioEntity();
-        existente.setTitular("Maria Silva");
-        existente.setSaldo(BigDecimal.valueOf(3000.0));
-        existente.setAtiva(true);
+        @Test
+        @DisplayName("Should list all beneficios")
+        void shouldListAll() {
+            when(beneficioRepository.findAll()).thenReturn(List.of(entity));
 
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.of(existente));
-        when(beneficioRepository.save(any(BeneficioEntity.class))).thenReturn(existente);
+            List<BeneficioEntity> result = beneficioService.listAll();
 
-        BeneficioEntity resultado = beneficioService.update(1L, dto);
+            assertEquals(1, result.size());
+        }
 
-        assertEquals("João Santos", resultado.getTitular());
-        assertEquals(BigDecimal.valueOf(2000.0).setScale(1), resultado.getSaldo().setScale(1));
-        assertFalse(resultado.getAtiva());
+        @Test
+        @DisplayName("Should list paged beneficios")
+        void shouldListPaged() {
+            Page<BeneficioEntity> page = new PageImpl<>(List.of(entity));
+            when(beneficioRepository.findAll(any(PageRequest.class))).thenReturn(page);
 
-        verify(beneficioRepository, times(1)).findById(1L);
-        verify(beneficioRepository, times(1)).save(existente);
+            Page<BeneficioEntity> result = beneficioService.listPaged(PageRequest.of(0, 10));
+
+            assertEquals(1, result.getTotalElements());
+        }
     }
 
-    @Test
-    void deveDeletarBeneficio() {
-        BeneficioEntity dummyEntity = new BeneficioEntity();
-        dummyEntity.setId(1L);
+    @Nested
+    @DisplayName("Get Tests")
+    class GetTests {
 
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.of(dummyEntity));
-        doNothing().when(beneficioRepository).deleteById(1L);
+        @Test
+        @DisplayName("Should get beneficio by id")
+        void shouldGetById() {
+            when(beneficioRepository.findById(1L)).thenReturn(Optional.of(entity));
 
-        assertDoesNotThrow(() -> beneficioService.delete(1L));
-        verify(beneficioRepository, times(1)).findById(1L);
-        verify(beneficioRepository, times(1)).deleteById(1L);
+            BeneficioEntity result = beneficioService.get(1L);
+
+            assertNotNull(result);
+            assertEquals(1L, result.getId());
+        }
+
+        @Test
+        @DisplayName("Should throw when beneficio not found")
+        void shouldThrowWhenNotFound() {
+            when(beneficioRepository.findById(99L)).thenReturn(Optional.empty());
+
+            assertThrows(BusinessException.class, () -> beneficioService.get(99L));
+        }
     }
 
-    @Test
-    void deveLancarErroAoDeletarBeneficioInexistente() {
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.empty());
+    @Nested
+    @DisplayName("Update Tests")
+    class UpdateTests {
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> beneficioService.delete(1L));
-        assertEquals("Benefício não encontrado: 1", ex.getMessage());
+        @Test
+        @DisplayName("Should update beneficio successfully")
+        void shouldUpdateBeneficio() {
+            when(beneficioRepository.findById(1L)).thenReturn(Optional.of(entity));
+            when(beneficioRepository.save(any())).thenReturn(entity);
 
-        verify(beneficioRepository, never()).deleteById(anyLong());
-        verify(beneficioRepository, times(1)).findById(1L);
+            BeneficioEntity result = beneficioService.update(1L, dto);
+
+            assertNotNull(result);
+            verify(beneficioMapper).updateEntity(entity, dto);
+            verify(beneficioRepository).save(entity);
+        }
+
+        @Test
+        @DisplayName("Should throw when updating non-existent beneficio")
+        void shouldThrowWhenUpdatingNonExistent() {
+            when(beneficioRepository.findById(99L)).thenReturn(Optional.empty());
+
+            assertThrows(BusinessException.class, () -> beneficioService.update(99L, dto));
+        }
     }
 
-    @Test
-    void deveTransferirEntreBeneficios() {
-        BeneficioEntity origem = new BeneficioEntity();
-        origem.setId(1L);
-        origem.setSaldo(BigDecimal.valueOf(500.0));
-        origem.setAtiva(true);
+    @Nested
+    @DisplayName("Delete Tests")
+    class DeleteTests {
 
-        BeneficioEntity destino = new BeneficioEntity();
-        destino.setId(2L);
-        destino.setSaldo(BigDecimal.valueOf(200.0));
-        destino.setAtiva(true);
+        @Test
+        @DisplayName("Should delete beneficio successfully")
+        void shouldDeleteBeneficio() {
+            when(beneficioRepository.findById(1L)).thenReturn(Optional.of(entity));
 
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
-        when(beneficioRepository.findById(2L)).thenReturn(Optional.of(destino));
-        when(beneficioRepository.save(any(BeneficioEntity.class))).thenAnswer(i -> i.getArgument(0));
-        when(transferenceRepository.save(any(TransferenceEntity.class))).thenAnswer(i -> i.getArgument(0));
+            beneficioService.delete(1L);
 
-        beneficioService.transfer(1L, 2L, 100.0);
+            verify(beneficioRepository).deleteById(1L);
+        }
 
-        assertEquals(BigDecimal.valueOf(400.0).setScale(1), origem.getSaldo().setScale(1));
-        assertEquals(BigDecimal.valueOf(300.0).setScale(1), destino.getSaldo().setScale(1));
+        @Test
+        @DisplayName("Should throw when deleting non-existent beneficio")
+        void shouldThrowWhenDeletingNonExistent() {
+            when(beneficioRepository.findById(99L)).thenReturn(Optional.empty());
 
-        verify(beneficioRepository, times(2)).save(any(BeneficioEntity.class));
-        verify(transferenceRepository, times(1)).save(any(TransferenceEntity.class));
+            assertThrows(BusinessException.class, () -> beneficioService.delete(99L));
+        }
     }
 
-    @Test
-    void deveLancarErroQuandoSaldoInsuficiente() {
-        BeneficioEntity origem = new BeneficioEntity();
-        origem.setId(1L);
-        origem.setSaldo(BigDecimal.valueOf(50.0));
-        origem.setAtiva(true);
+    @Nested
+    @DisplayName("Transfer Tests")
+    class TransferTests {
 
-        BeneficioEntity destino = new BeneficioEntity();
-        destino.setId(2L);
-        destino.setSaldo(BigDecimal.valueOf(200.0));
-        destino.setAtiva(true);
+        @Test
+        @DisplayName("Should transfer successfully")
+        void shouldTransferSuccessfully() {
+            BeneficioEntity origem = new BeneficioEntity();
+            origem.setId(1L);
+            origem.setSaldo(new BigDecimal("1000.00"));
+            origem.setAtiva(true);
 
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
-        when(beneficioRepository.findById(2L)).thenReturn(Optional.of(destino));
+            BeneficioEntity destino = new BeneficioEntity();
+            destino.setId(2L);
+            destino.setSaldo(new BigDecimal("500.00"));
+            destino.setAtiva(true);
 
-        BusinessException ex = assertThrows(BusinessException.class,
-                () -> beneficioService.transfer(1L, 2L, 100.0));
+            when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
+            when(beneficioRepository.findById(2L)).thenReturn(Optional.of(destino));
 
-        assertEquals("Saldo insuficiente no benefício de origem.", ex.getMessage());
+            beneficioService.transfer(1L, 2L, 200.0);
 
-        verify(beneficioRepository, never()).save(any(BeneficioEntity.class));
-    }
+            assertEquals(new BigDecimal("800.00"), origem.getSaldo());
+            assertEquals(new BigDecimal("700.00"), destino.getSaldo());
+            verify(beneficioRepository, times(2)).save(any());
+            verify(transferenceRepository).save(any());
+        }
 
-    @Test
-    void deveObterBeneficioPorId() {
-        BeneficioEntity entity = new BeneficioEntity();
-        entity.setId(1L);
-        entity.setTitular("Maria Silva");
+        @Test
+        @DisplayName("Should throw when same origin and destination")
+        void shouldThrowWhenSameOriginDestiny() {
+            assertThrows(BusinessException.class, () -> beneficioService.transfer(1L, 1L, 100.0));
+        }
 
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.of(entity));
+        @Test
+        @DisplayName("Should throw when amount is zero")
+        void shouldThrowWhenAmountZero() {
+            assertThrows(BusinessException.class, () -> beneficioService.transfer(1L, 2L, 0.0));
+        }
 
-        BeneficioEntity resultado = beneficioService.get(1L);
-        assertEquals("Maria Silva", resultado.getTitular());
-    }
+        @Test
+        @DisplayName("Should throw when amount is null")
+        void shouldThrowWhenAmountNull() {
+            assertThrows(BusinessException.class, () -> beneficioService.transfer(1L, 2L, null));
+        }
 
-    @Test
-    void deveLancarErroAoBuscarBeneficioInexistente() {
-        when(beneficioRepository.findById(1L)).thenReturn(Optional.empty());
+        @Test
+        @DisplayName("Should throw when insufficient balance")
+        void shouldThrowWhenInsufficientBalance() {
+            BeneficioEntity origem = new BeneficioEntity();
+            origem.setId(1L);
+            origem.setSaldo(new BigDecimal("100.00"));
+            origem.setAtiva(true);
 
-        BusinessException ex = assertThrows(BusinessException.class, () -> beneficioService.get(1L));
-        assertEquals("Benefício não encontrado: 1", ex.getMessage());
+            BeneficioEntity destino = new BeneficioEntity();
+            destino.setId(2L);
+            destino.setSaldo(new BigDecimal("500.00"));
+            destino.setAtiva(true);
+
+            when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
+            when(beneficioRepository.findById(2L)).thenReturn(Optional.of(destino));
+
+            assertThrows(BusinessException.class, () -> beneficioService.transfer(1L, 2L, 200.0));
+        }
+
+        @Test
+        @DisplayName("Should throw when beneficio is inactive")
+        void shouldThrowWhenInactive() {
+            BeneficioEntity origem = new BeneficioEntity();
+            origem.setId(1L);
+            origem.setSaldo(new BigDecimal("1000.00"));
+            origem.setAtiva(false);
+
+            BeneficioEntity destino = new BeneficioEntity();
+            destino.setId(2L);
+            destino.setSaldo(new BigDecimal("500.00"));
+            destino.setAtiva(true);
+
+            when(beneficioRepository.findById(1L)).thenReturn(Optional.of(origem));
+            when(beneficioRepository.findById(2L)).thenReturn(Optional.of(destino));
+
+            assertThrows(BusinessException.class, () -> beneficioService.transfer(1L, 2L, 100.0));
+        }
     }
 }

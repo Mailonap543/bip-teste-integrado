@@ -1,26 +1,41 @@
 import { Injectable, signal } from '@angular/core';
 
+export interface Notification {
+  id: number;
+  message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  undoAction?: () => void;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
+  private counter = 0;
+  notifications = signal<Notification[]>([]);
 
-  success(message: string): void { this.show(message, 'success'); }
+  success(message: string, undoAction?: () => void): void { this.show(message, 'success', undoAction); }
   error(message: string): void { this.show(message, 'error'); }
   info(message: string): void { this.show(message, 'info'); }
   warning(message: string): void { this.show(message, 'warning'); }
 
-  private show(message: string, type: string): void {
-    const div = document.createElement('div');
-    div.textContent = message;
-    div.style.cssText = `
-      position: fixed; top: 20px; right: 20px; z-index: 99999;
-      padding: 12px 20px; border-radius: 8px; font-weight: 500;
-      color: white; min-width: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideIn 0.3s ease;
-      background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : type === 'warning' ? '#FF9800' : '#2196F3'};
-    `;
-    document.body.appendChild(div);
-    setTimeout(() => { div.style.opacity = '0'; div.style.transition = 'opacity 0.3s'; setTimeout(() => div.remove(), 300); }, 3000);
+  private show(message: string, type: 'success' | 'error' | 'info' | 'warning', undoAction?: () => void): void {
+    const id = ++this.counter;
+    const notification: Notification = { id, message, type, undoAction };
+    this.notifications.update(list => [...list, notification]);
+
+    setTimeout(() => this.dismiss(id), undoAction ? 5000 : 3000);
+  }
+
+  undo(id: number): void {
+    const notification = this.notifications().find(n => n.id === id);
+    if (notification?.undoAction) {
+      notification.undoAction();
+    }
+    this.dismiss(id);
+  }
+
+  dismiss(id: number): void {
+    this.notifications.update(list => list.filter(n => n.id !== id));
   }
 }

@@ -1,6 +1,6 @@
 # Java
-target/
-*.class
+**/target/
+**/*.class
 *.jar
 *.war
 *.log
@@ -23,9 +23,9 @@ target/
 *.iws
 
 # Angular
-frontend/node_modules/
-frontend/dist/
-frontend/.angular/
+node_modules/
+.angular/
+dist/
 frontend/.sass-cache/
 frontend/coverage/
 
